@@ -11,17 +11,28 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "Users")
+@Table(name = "Shelter")
 
-public class User {
+
+
+public class Shelter {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "Id_User")
-    private int Id_User;
+    @Column(name = "Id_Shelter")
+    private int Id_Shelter;
 
-    @Column(name = "password")
-    private String password;
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "address")
+    private String address;
+
+    @Column(name = "phone")
+    private int phone;
+
+    @Column(name = "email")
+    private String email;
 
     @Column(name = "by")
     private int by;
@@ -34,13 +45,4 @@ public class User {
 
     @Column(name = "last_update")
     private Date last_update;
-
-    @ManyToOne
-    @JoinColumn(name = "Id_Rol", nullable = false, foreignKey = @ForeignKey(name = "fk_Rol_User"))
-    private Rol Rol;
-
-    @OneToOne
-    @JoinColumn(name = "Id_Contact", nullable = false, foreignKey = @ForeignKey(name = "fk_Contact_User"))
-    private Contact Contact;
-
 }
