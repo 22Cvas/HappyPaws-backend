@@ -11,17 +11,25 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "Rol")
-
-public class Rol {
+@Table(name = "Contact")
+public class Contact {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "Id_Rol")
-    private int Id_Rol;
+    @Column(name = "Id_Contact")
+    private int Id_Contact;
 
-    @Column(name = "name")
+    @Column (name = "name")
     private String name;
+
+    @Column (name = "DUI")
+    private String DUI;
+
+    @Column(name = "Phone")
+    private int Phone;
+
+    @Column(name = "Email")
+    private String Email;
 
     @Column(name = "by")
     private int by;
@@ -35,3 +43,6 @@ public class Rol {
     @Column(name = "last_update")
     private Date last_update;
 }
+
+
+

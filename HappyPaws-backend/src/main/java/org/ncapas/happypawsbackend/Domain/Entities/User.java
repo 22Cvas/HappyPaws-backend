@@ -11,17 +11,17 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "Rol")
+@Table(name = "Users")
 
-public class Rol {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "Id_Rol")
-    private int Id_Rol;
+    @Column(name = "Id_User")
+    private int Id_User;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "password")
+    private String password;
 
     @Column(name = "by")
     private int by;
@@ -34,4 +34,13 @@ public class Rol {
 
     @Column(name = "last_update")
     private Date last_update;
+
+    @ManyToOne
+    @JoinColumn(name = "Id_Rol", nullable = false, foreignKey = @ForeignKey(name = "fk_Rol_User"))
+    private Rol Rol;
+
+    @OneToOne
+    @JoinColumn(name = "Id_Contact", nullable = false, foreignKey = @ForeignKey(name = "fk_Contact_User"))
+    private Contact Contact;
+
 }
