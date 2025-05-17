@@ -12,14 +12,20 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "Characteristics")
+@Table(name = "Pet_Attribute")
 
-public class Characteristics {
+public class Pet_Attribute {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "Id_Characteristics")
-    private UUID Id_Characteristics;
+    @Column(name = "Id_Pet_Attribute")
+    private UUID Id_Pet_Attribute;
+
+    @Column(name = "attribute")
+    private int attribute;
+
+    @Column(name = "attribute_Value")
+    private int attribute_Value;
 
     @Column(name = "by")
     private int by;
@@ -36,16 +42,4 @@ public class Characteristics {
     @ManyToOne
     @JoinColumn(name = "Id_Pet", nullable = false, foreignKey = @ForeignKey(name = "fk_Pet_Characteristics"))
     private Pet Pet;
-
-    @ManyToOne
-    @JoinColumn(name = "Id_Species", nullable = false, foreignKey = @ForeignKey(name = "fk_Species_Characteristics"))
-    private Species Species;
-
-    @ManyToOne
-    @JoinColumn(name = "Id_Race", nullable = false, foreignKey = @ForeignKey(name = "fk_Race_Characteristics"))
-    private Race Race;
-
-    @OneToOne
-    @JoinColumn(name = "Id_Size", nullable = false, foreignKey = @ForeignKey(name = "fk_Size_Characteristics"))
-    private Size Size;
 }

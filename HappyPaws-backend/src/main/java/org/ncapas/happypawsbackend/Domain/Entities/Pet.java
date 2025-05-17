@@ -64,5 +64,17 @@ public class Pet {
     @JoinColumn(name = "Id_Shelter", nullable = false, foreignKey = @ForeignKey(name = "fk_Shelter_Pet"))
     private Shelter Shelter;
 
+    @ManyToOne
+    @JoinColumn(name = "Id_Species", nullable = false, foreignKey = @ForeignKey(name = "fk_Species_Characteristics"))
+    private Species Species;
+
+    @ManyToOne
+    @JoinColumn(name = "Id_Breed", nullable = false, foreignKey = @ForeignKey(name = "fk_Race_Characteristics"))
+    private Breed Breed;
+
+    @ManyToOne
+    @JoinColumn(name = "Id_Size", nullable = false, foreignKey = @ForeignKey(name = "fk_Size_Characteristics"))
+    private Size Size;
+
 
 }

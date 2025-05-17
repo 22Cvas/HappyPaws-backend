@@ -11,14 +11,14 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "Race")
+@Table(name = "Breed")
 
-public class Race {
+public class Breed {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "Id_Race")
-    private int Id_Race;
+    @Column(name = "Id_Breed")
+    private int Id_Breed;
 
     @Column(name = "name")
     private String name;

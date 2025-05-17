@@ -55,9 +55,10 @@ public class Aplication {
     @JoinColumn(name = "Id_Users", nullable = false, foreignKey = @ForeignKey(name = "fk_Users_Aplication"))
     private Users Users;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "Id_Pet", nullable = false, foreignKey = @ForeignKey(name = "fk_Pet_Aplication"))
     private Pet Pet;
+
 
 
 }
