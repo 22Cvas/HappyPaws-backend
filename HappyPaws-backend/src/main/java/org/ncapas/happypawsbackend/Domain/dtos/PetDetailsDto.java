@@ -1,9 +1,11 @@
 package org.ncapas.happypawsbackend.Domain.dtos;
 
+import lombok.Data;
 import org.ncapas.happypawsbackend.Domain.Entities.Vaccine;
 
 import java.util.List;
 
+@Data
 public class PetDetailsDto {
     private String gender;
     private int age;

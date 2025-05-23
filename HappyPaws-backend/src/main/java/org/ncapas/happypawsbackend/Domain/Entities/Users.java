@@ -1,9 +1,7 @@
 package org.ncapas.happypawsbackend.Domain.Entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 
@@ -11,6 +9,8 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Table(name = "Users")
 
 public class Users {
@@ -20,8 +20,13 @@ public class Users {
     @Column(name = "Id_Users")
     private int Id_Users;
 
+    @Column(name = "name")
+    private String name;
     @Column(name = "password")
     private String password;
+
+    @Column(name = "email")
+    private String email;
 
     @Column(name = "by")
     private int by;

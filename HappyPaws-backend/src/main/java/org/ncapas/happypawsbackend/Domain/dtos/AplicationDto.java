@@ -1,7 +1,10 @@
 package org.ncapas.happypawsbackend.Domain.dtos;
 
+import lombok.Data;
+
 import java.time.LocalDate;
 
+@Data
 public class AplicationDto {
     private Long id;
     private Long userId;
