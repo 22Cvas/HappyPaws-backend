@@ -14,15 +14,7 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<Users, Integer> {
 
 
-    Optional<Users> findByName(String name);
 
-    Users findById_Users(Integer id_users);
-
-    List<Users> findByRoles(List<Rol> roles);
-
-    List<Users> findAllByRolesIs(List<Rol> roles);
-
-    List<Users> findByRoleNameAndState(String role, boolean state);
 
 
 }

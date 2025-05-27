@@ -11,12 +11,7 @@ import java.util.UUID;
 
 @Repository
 public interface PetRepository extends JpaRepository<Pet, Integer> {
-    List<Pet> findByState(String state);
 
-    List<Pet> findPetByAge(Integer age);
-
-    List<Pet> findPetById_Pet(Integer id_pet);
-    List<Pet> findSterilizedPet(boolean sterelized);
 
 
 

@@ -11,7 +11,4 @@ import java.util.UUID;
 @Repository
 public interface AplicationRepository extends JpaRepository<Aplication, Integer> {
 
-
-    List<Aplication> findAplicationByAplication_Date(LocalDate aplication_date);
-    List<Aplication> findAplicationByCompletion_Date(LocalDate completion_date);
 }

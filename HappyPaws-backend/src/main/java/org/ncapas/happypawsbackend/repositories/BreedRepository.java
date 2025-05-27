@@ -10,5 +10,5 @@ import java.util.List;
 public interface BreedRepository extends JpaRepository<Breed, Integer> {
 
 
-    List<Breed> findBreedByName(String name);
+
 }
