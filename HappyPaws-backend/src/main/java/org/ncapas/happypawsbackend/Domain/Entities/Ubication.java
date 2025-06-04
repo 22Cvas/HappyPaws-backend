@@ -44,6 +44,6 @@ public class Ubication {
 
     @ManyToOne
     @JoinColumn(name = "Id_Users", nullable = false, foreignKey = @ForeignKey(name = "fk_Users_Ubication"))
-    private Users users;
+    private User users;
 
 }

@@ -34,4 +34,15 @@ public class Rol {
 
     @Column(name = "last_update")
     private Date last_update;
+
+    @Enumerated(EnumType.STRING)
+    private RoleEnum nameRole;
+
+    public enum RoleEnum {
+        VISITANTE,
+        ADOPTANTE,
+        COLABORADOR,
+        ADMIN
+    }
+
 }

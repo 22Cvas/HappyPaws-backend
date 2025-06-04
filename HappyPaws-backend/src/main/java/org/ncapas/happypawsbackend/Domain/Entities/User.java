@@ -1,19 +1,25 @@
 package org.ncapas.happypawsbackend.Domain.Entities;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
-@Entity
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
+@Entity
 @Table(name = "Users")
-
-public class Users {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -47,5 +53,6 @@ public class Users {
     @OneToOne
     @JoinColumn(name = "Id_Contact", nullable = false, foreignKey = @ForeignKey(name = "fk_Contact_User"))
     private Contact Contact;
+
 
 }

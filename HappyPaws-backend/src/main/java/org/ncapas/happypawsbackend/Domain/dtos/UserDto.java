@@ -1,4 +1,7 @@
 package org.ncapas.happypawsbackend.Domain.dtos;
 
-public class RolDto {
+import lombok.Data;
+
+@Data
+public class UserDto {
 }
