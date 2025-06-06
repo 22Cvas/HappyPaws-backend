@@ -16,9 +16,9 @@ import java.util.Date;
 public class Breed {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "Id_Breed")
-    private int Id_Breed;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_breed")
+    private Integer id_breed;
 
     @Column(name = "name")
     private String name;

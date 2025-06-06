@@ -20,38 +20,38 @@ public class Pet {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int Id_Pet;
-    /*
+
     @Column(name = "name")
     private String name;
-    */
+
     @Column(name = "age")
     private int age;
 
     @Column(name = "weight")
     private int weight;
 
-    @Column (name = "Sterilized")
-    private int Sterilized;
+    @Column(name = "sterilized")
+    private int sterilized;
 
-    @Column (name = "entry_Date")
+    @Column(name = "entry_Date")
     private Date entry_Date;
 
-    @Column (name = "review_Date")
+    @Column(name = "review_Date")
     private Date review_Date;
 
-    @Column (name = "description")
+    @Column(name = "description")
     private String description;
 
-    @Column (name = "history")
+    @Column(name = "history")
     private String history;
 
-    @Column (name = "photoURL")
+    @Column(name = "photoURL")
     private String photoURL;
 
-    @Column (name = "by")
+    @Column(name = "by")
     private int by;
 
-    @Column (name = "state")
+    @Column(name = "state")
     private int state;
 
     @Column(name = "creation_date")
@@ -65,16 +65,17 @@ public class Pet {
     private Shelter Shelter;
 
     @ManyToOne
-    @JoinColumn(name = "Id_Species", nullable = false, foreignKey = @ForeignKey(name = "fk_Species_Characteristics"))
+    @JoinColumn(name = "id_species", nullable = false, foreignKey = @ForeignKey(name = "fk_Species_Characteristics"))
     private Species Species;
 
     @ManyToOne
-    @JoinColumn(name = "Id_Breed", nullable = false, foreignKey = @ForeignKey(name = "fk_Race_Characteristics"))
+    @JoinColumn(name = "id_breed", nullable = false, foreignKey = @ForeignKey(name = "fk_Race_Characteristics"))
     private Breed Breed;
 
     @ManyToOne
-    @JoinColumn(name = "Id_Size", nullable = false, foreignKey = @ForeignKey(name = "fk_Size_Characteristics"))
+    @JoinColumn(name = "id_size", nullable = false, foreignKey = @ForeignKey(name = "fk_Size_Characteristics"))
     private Size Size;
+
 
 
 }

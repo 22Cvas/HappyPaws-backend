@@ -17,9 +17,9 @@ import java.util.Date;
 public class Size {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "Id_Size")
-    private int Id_Size;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_size")
+    private Integer id_size;
 
     @Column(name = "name")
     private String name;

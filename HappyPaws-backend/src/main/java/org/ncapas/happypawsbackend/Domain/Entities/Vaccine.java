@@ -17,8 +17,8 @@ import java.util.Date;
 public class Vaccine {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int Id_Vaccine;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id_vaccine;
 
     @Column(name = "name")
     private String name;
@@ -45,7 +45,7 @@ public class Vaccine {
     private Date last_update;
 
     @ManyToOne
-    @JoinColumn(name = "Id_Pet", nullable = false, foreignKey = @ForeignKey(name = "fk_Pet_Vaccine"))
+    @JoinColumn(name = "id_pet", nullable = false, foreignKey = @ForeignKey(name = "fk_Pet_Vaccine"))
     private Pet Pet;
 
 

@@ -16,9 +16,9 @@ import java.util.Date;
 public class Species {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "Id_Species")
-    private int Id_Species;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_species")
+    private int id_species;
 
     @Column(name = "name")
     private String name;

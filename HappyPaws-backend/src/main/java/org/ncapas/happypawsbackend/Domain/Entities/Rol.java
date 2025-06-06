@@ -1,11 +1,14 @@
 package org.ncapas.happypawsbackend.Domain.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -16,11 +19,11 @@ import java.util.Date;
 public class Rol {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "Id_Rol")
-    private int Id_Rol;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_rol")
+    private Integer id_rol;
 
-    @Column(name = "name")
+    @Column(name = "name",unique = true, nullable = false)
     private String name;
 
     @Column(name = "by")
@@ -35,14 +38,8 @@ public class Rol {
     @Column(name = "last_update")
     private Date last_update;
 
-    @Enumerated(EnumType.STRING)
-    private RoleEnum nameRole;
-
-    public enum RoleEnum {
-        VISITANTE,
-        ADOPTANTE,
-        COLABORADOR,
-        ADMIN
-    }
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
+    @JsonIgnore
+    List<User> users;
 
 }

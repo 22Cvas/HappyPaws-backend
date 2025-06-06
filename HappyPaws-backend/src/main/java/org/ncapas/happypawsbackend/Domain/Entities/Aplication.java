@@ -18,8 +18,8 @@ public class Aplication {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "Id_Aplication")
-    private UUID Id_Aplication;
+    @Column(name = "id_aplication")
+    private UUID id_aplication;
 
     @Column(name = "aplication_Date")
     private Date aplication_Date;
@@ -52,11 +52,11 @@ public class Aplication {
     private Date last_update;
 
     @ManyToOne
-    @JoinColumn(name = "Id_Users", nullable = false, foreignKey = @ForeignKey(name = "fk_Users_Aplication"))
+    @JoinColumn(name = "id_user", nullable = false, foreignKey = @ForeignKey(name = "fk_Users_Aplication"))
     private User Users;
 
     @OneToOne
-    @JoinColumn(name = "Id_Pet", nullable = false, foreignKey = @ForeignKey(name = "fk_Pet_Aplication"))
+    @JoinColumn(name = "id_pet", nullable = false, foreignKey = @ForeignKey(name = "fk_Pet_Aplication"))
     private Pet Pet;
 
 

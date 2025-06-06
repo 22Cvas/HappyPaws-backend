@@ -16,9 +16,9 @@ import java.util.Date;
 public class Ubication {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "Id_Ubication")
-    private int Id_Ubication;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_Ubication")
+    private Integer id_Ubication;
 
     @Column (name = "entry_Date")
     private Date entry_Date;
@@ -39,11 +39,11 @@ public class Ubication {
     private Date last_update;
 
     @ManyToOne
-    @JoinColumn(name = "Id_Shelter", nullable = false, foreignKey = @ForeignKey(name = "fk_Shelter_Ubication"))
+    @JoinColumn(name = "id_shelter", nullable = false, foreignKey = @ForeignKey(name = "fk_Shelter_Ubication"))
     private Shelter Shelter;
 
     @ManyToOne
-    @JoinColumn(name = "Id_Users", nullable = false, foreignKey = @ForeignKey(name = "fk_Users_Ubication"))
+    @JoinColumn(name = "id_users", nullable = false, foreignKey = @ForeignKey(name = "fk_Users_Ubication"))
     private User users;
 
 }

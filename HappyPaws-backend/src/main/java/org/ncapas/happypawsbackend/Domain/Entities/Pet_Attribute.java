@@ -18,8 +18,8 @@ public class Pet_Attribute {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "Id_Pet_Attribute")
-    private UUID Id_Pet_Attribute;
+    @Column(name = "id_pet_attribute")
+    private UUID id_pet_attribute;
 
     @Column(name = "attribute")
     private int attribute;
@@ -40,6 +40,6 @@ public class Pet_Attribute {
     private Date last_update;
 
     @ManyToOne
-    @JoinColumn(name = "Id_Pet", nullable = false, foreignKey = @ForeignKey(name = "fk_Pet_Characteristics"))
+    @JoinColumn(name = "id_pet", nullable = false, foreignKey = @ForeignKey(name = "fk_Pet_Characteristics"))
     private Pet Pet;
 }

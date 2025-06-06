@@ -18,9 +18,9 @@ import java.util.Date;
 public class Shelter {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "Id_Shelter")
-    private int Id_Shelter;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_shelter")
+    private int id_shelter;
 
     @Column(name = "name")
     private String name;

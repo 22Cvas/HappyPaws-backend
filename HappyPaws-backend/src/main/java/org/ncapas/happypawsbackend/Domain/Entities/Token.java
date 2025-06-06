@@ -29,11 +29,17 @@ public class Token {
     private boolean expired;
     private boolean revoked;
 
+    public Token(String tokenString, User user) {
+    }
 
 
     public enum TokenType {
         BEARER
     }
+
+    @ManyToOne
+    @JoinColumn(name = "id_user")
+    private User user;
 }
 
 
