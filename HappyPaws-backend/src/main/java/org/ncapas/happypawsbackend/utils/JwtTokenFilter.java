@@ -15,6 +15,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
+import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.path;
+
 @Component
 public class JwtTokenFilter extends OncePerRequestFilter {
 
@@ -30,6 +32,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
+
+        if (path.equals("/auth/login") || path.equals("/auth/register")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);

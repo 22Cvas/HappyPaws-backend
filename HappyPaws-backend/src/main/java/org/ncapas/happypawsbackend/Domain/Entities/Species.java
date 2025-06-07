@@ -18,16 +18,16 @@ public class Species {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_species")
-    private int id_species;
+    private Integer id_species;
 
     @Column(name = "name")
     private String name;
 
     @Column(name = "by")
-    private int by;
+    private Integer by;
 
     @Column(name = "state")
-    private int state;
+    private Integer state;
 
     @Column(name = "creation_date")
     private Date creation_date;

@@ -1,8 +1,11 @@
 package org.ncapas.happypawsbackend.services;
 
+import org.ncapas.happypawsbackend.Domain.Entities.Rol;
+import org.ncapas.happypawsbackend.Domain.Entities.Token;
 import org.ncapas.happypawsbackend.Domain.Entities.User;
 import org.ncapas.happypawsbackend.Domain.dtos.LoginDto;
 import org.ncapas.happypawsbackend.Domain.dtos.RegisterDto;
+import org.ncapas.happypawsbackend.repositories.RoleRepository;
 import org.ncapas.happypawsbackend.repositories.TokenRepository;
 import org.ncapas.happypawsbackend.repositories.UserRepository;
 import org.ncapas.happypawsbackend.utils.JwtUtils;
@@ -17,6 +20,9 @@ public class AuthService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Autowired
     private TokenRepository tokenRepository;
@@ -34,6 +40,9 @@ public class AuthService {
         user.setPhone(String.valueOf(request.getPhone()));
         user.setDUI(String.valueOf(request.getDui()));
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        Rol rolUser = roleRepository.findRolByName("ADOPTANTE")
+                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+        user.getRoles().add(rolUser);
         userRepository.save(user);
     }
         /*
@@ -59,7 +68,18 @@ public class AuthService {
             throw new BadCredentialsException("Contraseña incorrecta");
         }
 
-        return  jwtUtils.generateToken(user);
+        String jwtToken =  jwtUtils.generateToken(user);
+
+
+          // Guardar token en BD
+          Token token = new Token();
+          token.setToken(jwtToken);
+          token.setUser(user);
+          token.setExpired(false);
+          token.setRevoked(false);
+          tokenRepository.save(token);
+
+          return jwtToken;
     }
 
 }

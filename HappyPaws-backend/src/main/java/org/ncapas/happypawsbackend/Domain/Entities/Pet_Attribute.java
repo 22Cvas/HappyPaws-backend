@@ -22,16 +22,16 @@ public class Pet_Attribute {
     private UUID id_pet_attribute;
 
     @Column(name = "attribute")
-    private int attribute;
+    private Integer attribute;
 
     @Column(name = "attribute_Value")
-    private int attribute_Value;
+    private Integer attribute_Value;
 
     @Column(name = "by")
-    private int by;
+    private Integer by;
 
     @Column(name = "state")
-    private int state;
+    private Integer state;
 
     @Column(name = "creation_date")
     private Date creation_date;
