@@ -25,10 +25,10 @@ public class Size {
     private String name;
 
     @Column(name = "by")
-    private int by;
+    private Integer by;
 
     @Column(name = "state")
-    private int state;
+    private Integer state;
 
     @Column(name = "creation_date")
     private Date creation_date;

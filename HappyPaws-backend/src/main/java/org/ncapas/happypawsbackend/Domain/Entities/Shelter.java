@@ -20,7 +20,7 @@ public class Shelter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_shelter")
-    private int id_shelter;
+    private Integer id_shelter;
 
     @Column(name = "name")
     private String name;
@@ -35,10 +35,10 @@ public class Shelter {
     private String email;
 
     @Column(name = "by")
-    private int by;
+    private Integer by;
 
     @Column(name = "state")
-    private int state;
+    private Integer state;
 
     @Column(name = "creation_date")
     private Date creation_date;

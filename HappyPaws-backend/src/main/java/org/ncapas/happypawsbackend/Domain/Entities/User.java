@@ -48,13 +48,13 @@ public class User implements UserDetails {
     @NotBlank(message = "El teléfono no puede estar vacío")
     @Pattern(regexp = "^[0-9]{8}$", message = "El teléfono debe tener 8 dígitos numéricos")
     @Column(name = "Phone")
-    private String Phone;
+    private String phone;
 
     @Column(name = "by")
-    private int by;
+    private Integer by;
 
     @Column(name = "state")
-    private int state;
+    private Integer state;
 
     @Column(name = "creation_date")
     private Date creation_date;
@@ -69,14 +69,14 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "id_user"),
             inverseJoinColumns = @JoinColumn(name = "id_rol")
     )
-    private List<Rol> roles;
+    private List<Rol> roles = new ArrayList<>();;
 
-    @OneToMany(mappedBy = "Users") // Usa el nombre del campo en Aplication
-    private List<Aplication> aplications;
+    @OneToMany(mappedBy = "Users")
+    private List<Aplication> aplications = new ArrayList<>();;
 
     @OneToMany
     @JoinColumn(name = "id_token")
-    private List<Token> tokens;
+    private List<Token> tokens = new ArrayList<>();;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()

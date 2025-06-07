@@ -18,8 +18,9 @@ import java.util.Date;
 public class Pet {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int Id_Pet;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_pet")
+    private Integer id_pet;
 
     @Column(name = "name")
     private String name;
@@ -49,10 +50,10 @@ public class Pet {
     private String photoURL;
 
     @Column(name = "by")
-    private int by;
+    private Integer by;
 
     @Column(name = "state")
-    private int state;
+    private Integer state;
 
     @Column(name = "creation_date")
     private Date creation_date;

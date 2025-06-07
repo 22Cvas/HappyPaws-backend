@@ -40,18 +40,11 @@ public class AuthConfig {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-
-    @Autowired
-    private UserDetailsService userDetailsService;
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login", "auth/register").permitAll()
+                        .requestMatchers("/auth/login", "/auth/register").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -72,7 +65,7 @@ public class AuthConfig {
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder);
+        authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
 
     }
@@ -85,8 +78,8 @@ public class AuthConfig {
                 http.getSharedObject(AuthenticationManagerBuilder.class);
 
         authenticationManagerBuilder
-                .userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder);
+                .userDetailsService(userDetailsService())
+                .passwordEncoder(passwordEncoder());
 
         return authenticationManagerBuilder.build();
     }

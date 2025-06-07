@@ -28,22 +28,22 @@ public class Aplication {
     private Date Completion_Date;
 
     @Column(name = "other_Pets")
-    private int other_Pets;
+    private Integer other_Pets;
 
     @Column(name = "reason_adoption")
     private String reason_adoption;
 
     @Column(name = "enough_space")
-    private int enough_space;
+    private Integer enough_space;
 
     @Column(name = "enought_time")
     private String enought_time;
 
     @Column(name = "by")
-    private int by;
+    private Integer by;
 
     @Column(name = "state")
-    private int state;
+    private Integer state;
 
     @Column(name = "creation_date")
     private Date creation_date;
