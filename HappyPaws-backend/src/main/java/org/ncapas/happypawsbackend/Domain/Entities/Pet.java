@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.ncapas.happypawsbackend.Domain.Audit.Auditable;
+import org.ncapas.happypawsbackend.Domain.Enums.Gender;
+import org.ncapas.happypawsbackend.Domain.Enums.PetStatus;
 
 import java.util.Date;
 
@@ -13,9 +16,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Table(name = "Pet")
 
-
-
-public class Pet {
+public class Pet  extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,11 +29,21 @@ public class Pet {
     @Column(name = "age")
     private int age;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender")
+    private Gender gender;
+
     @Column(name = "weight")
     private int weight;
 
     @Column(name = "sterilized")
-    private int sterilized;
+    private boolean sterilized;
+
+    @Column(name = "dewormed")
+    private boolean parasiteFree;
+
+    @Column(name = "fully_vaccinated")
+    private boolean fullyVaccinated;
 
     @Column(name = "entry_Date")
     private Date entry_Date;
@@ -49,17 +60,9 @@ public class Pet {
     @Column(name = "photoURL")
     private String photoURL;
 
-    @Column(name = "by")
-    private Integer by;
-
-    @Column(name = "state")
-    private Integer state;
-
-    @Column(name = "creation_date")
-    private Date creation_date;
-
-    @Column(name = "last_update")
-    private Date last_update;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private PetStatus status;
 
     @ManyToOne
     @JoinColumn(name = "Id_Shelter", nullable = false, foreignKey = @ForeignKey(name = "fk_Shelter_Pet"))
@@ -76,7 +79,5 @@ public class Pet {
     @ManyToOne
     @JoinColumn(name = "id_size", nullable = false, foreignKey = @ForeignKey(name = "fk_Size_Characteristics"))
     private Size Size;
-
-
 
 }

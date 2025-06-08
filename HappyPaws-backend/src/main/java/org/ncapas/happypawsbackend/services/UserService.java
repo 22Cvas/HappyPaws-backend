@@ -16,9 +16,9 @@ public class UserService {
     private UserRepository userRepository;
 
     public Optional<User> findUserByEmail(String email) {
-
         return userRepository.findUserByEmail(email);
     }
+
     public boolean existByDui(String dui){
         return userRepository.existsByDUI(dui);
     }
@@ -27,5 +27,5 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
-    }
+}
 

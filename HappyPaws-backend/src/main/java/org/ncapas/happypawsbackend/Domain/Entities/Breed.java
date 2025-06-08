@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.ncapas.happypawsbackend.Domain.Audit.Auditable;
 
 import java.util.Date;
 
@@ -13,7 +14,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Table(name = "Breed")
 
-public class Breed {
+public class Breed  extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,16 +24,8 @@ public class Breed {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "by")
-    private Integer by;
-
-    @Column(name = "state")
-    private Integer state;
-
-    @Column(name = "creation_date")
-    private Date creation_date;
-
-    @Column(name = "last_update")
-    private Date last_update;
+    @ManyToOne
+    @JoinColumn(name = "id_species", nullable = false, foreignKey = @ForeignKey(name = "fk_species_breed"))
+    private Species species;
 
 }

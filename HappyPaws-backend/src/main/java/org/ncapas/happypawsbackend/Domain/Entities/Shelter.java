@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.ncapas.happypawsbackend.Domain.Audit.Auditable;
 
 import java.util.Date;
 
@@ -15,7 +16,7 @@ import java.util.Date;
 
 
 
-public class Shelter {
+public class Shelter extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,15 +35,4 @@ public class Shelter {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "by")
-    private Integer by;
-
-    @Column(name = "state")
-    private Integer state;
-
-    @Column(name = "creation_date")
-    private Date creation_date;
-
-    @Column(name = "last_update")
-    private Date last_update;
 }

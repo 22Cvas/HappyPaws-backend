@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.ncapas.happypawsbackend.Domain.Audit.Auditable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Entity
 @Table(name = "Users")
-public class User implements UserDetails {
+public class User  extends Auditable implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,44 +51,27 @@ public class User implements UserDetails {
     @Column(name = "Phone")
     private String phone;
 
-    @Column(name = "by")
-    private Integer by;
-
-    @Column(name = "state")
-    private Integer state;
-
-    @Column(name = "creation_date")
-    private Date creation_date;
-
-    @Column(name = "last_update")
-    private Date last_update;
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JsonIgnore
-    @JoinTable(
-            name = "user_role",
-            joinColumns = @JoinColumn(name = "id_user"),
-            inverseJoinColumns = @JoinColumn(name = "id_rol")
-    )
-    private List<Rol> roles = new ArrayList<>();;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_rol", nullable = false, foreignKey = @ForeignKey(name = "fk_user_rol"))
+    private Rol rol;
 
     @OneToMany(mappedBy = "Users")
-    private List<Aplication> aplications = new ArrayList<>();;
+    private List<Aplication> aplications;
 
     @OneToMany
     @JoinColumn(name = "id_token")
-    private List<Token> tokens = new ArrayList<>();;
+    private List<Token> tokens;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(rol -> new SimpleGrantedAuthority(rol.getName()))
-                .collect(Collectors.toList());
+        return List.of(new SimpleGrantedAuthority("ROLE_" + rol.getName().name()));
     }
 
     @Override
     public String getUsername() {
         return email;
     }
+
     @Override
     public String getPassword() {
         return password;
@@ -95,21 +79,21 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return state == 1;
+        return getState() == 1;
     }
 }

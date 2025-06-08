@@ -68,7 +68,6 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("EL telefono es invalido");
         }
 
-
         authService.register(request);
             return ResponseEntity.ok("Registro exitoso");
 

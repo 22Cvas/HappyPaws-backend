@@ -1,10 +1,14 @@
 package org.ncapas.happypawsbackend.Domain.Entities;
+import org.ncapas.happypawsbackend.Domain.Audit.Auditable;
+
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.ncapas.happypawsbackend.Domain.Enums.ApplicationState;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
@@ -14,7 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Table(name = "Aplication")
 
-public class Aplication {
+public class Aplication extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -28,28 +32,23 @@ public class Aplication {
     private Date Completion_Date;
 
     @Column(name = "other_Pets")
-    private Integer other_Pets;
+    private boolean other_Pets;
 
     @Column(name = "reason_adoption")
     private String reason_adoption;
 
     @Column(name = "enough_space")
-    private Integer enough_space;
+    private boolean enough_space;
 
     @Column(name = "enought_time")
-    private String enought_time;
+    private boolean enough_time;
 
-    @Column(name = "by")
-    private Integer by;
+    @Column(name = "location_description")
+    private String locationDescription;
 
-    @Column(name = "state")
-    private Integer state;
-
-    @Column(name = "creation_date")
-    private Date creation_date;
-
-    @Column(name = "last_update")
-    private Date last_update;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "applicaion_state")
+    private ApplicationState applicationState;
 
     @ManyToOne
     @JoinColumn(name = "id_user", nullable = false, foreignKey = @ForeignKey(name = "fk_Users_Aplication"))
@@ -58,7 +57,5 @@ public class Aplication {
     @OneToOne
     @JoinColumn(name = "id_pet", nullable = false, foreignKey = @ForeignKey(name = "fk_Pet_Aplication"))
     private Pet Pet;
-
-
 
 }

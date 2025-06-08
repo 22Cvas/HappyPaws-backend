@@ -27,18 +27,6 @@ public class Pet_Attribute {
     @Column(name = "attribute_Value")
     private Integer attribute_Value;
 
-    @Column(name = "by")
-    private Integer by;
-
-    @Column(name = "state")
-    private Integer state;
-
-    @Column(name = "creation_date")
-    private Date creation_date;
-
-    @Column(name = "last_update")
-    private Date last_update;
-
     @ManyToOne
     @JoinColumn(name = "id_pet", nullable = false, foreignKey = @ForeignKey(name = "fk_Pet_Characteristics"))
     private Pet Pet;

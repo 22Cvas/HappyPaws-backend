@@ -3,6 +3,7 @@ package org.ncapas.happypawsbackend.services;
 import org.ncapas.happypawsbackend.Domain.Entities.Rol;
 import org.ncapas.happypawsbackend.Domain.Entities.Token;
 import org.ncapas.happypawsbackend.Domain.Entities.User;
+import org.ncapas.happypawsbackend.Domain.Enums.UserRol;
 import org.ncapas.happypawsbackend.Domain.dtos.LoginDto;
 import org.ncapas.happypawsbackend.Domain.dtos.RegisterDto;
 import org.ncapas.happypawsbackend.repositories.RoleRepository;
@@ -40,9 +41,11 @@ public class AuthService {
         user.setPhone(String.valueOf(request.getPhone()));
         user.setDUI(String.valueOf(request.getDui()));
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        Rol rolUser = roleRepository.findRolByName("ADOPTANTE")
+
+        Rol rolUser = roleRepository.findRolByName(UserRol.ADOPTANTE)
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
-        user.getRoles().add(rolUser);
+        user.setRol(rolUser);
+        user.setState(1);
         userRepository.save(user);
     }
         /*
