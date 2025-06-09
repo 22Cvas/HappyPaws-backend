@@ -13,10 +13,12 @@ import org.ncapas.happypawsbackend.repositories.AccessTokenRepository;
 import org.ncapas.happypawsbackend.repositories.UserRepository;
 import org.ncapas.happypawsbackend.utils.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 
@@ -53,6 +55,15 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
         user.setRol(rolUser);
         user.setState(1);
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El correo ya está en uso");
+        }
+        if (userRepository.existsByDUI(request.getDui())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El DUI ya está registrado");
+        }
+
+
         userRepository.save(user);
     }
     /* var jwtToken = jwtUtils.generateToken(user);
@@ -87,9 +98,6 @@ public class AuthService {
         return jwt;
     }
 
-
-
-
     public User getValidUser(LoginDto request) {
         User user = userRepository.findUserByEmail(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
@@ -98,8 +106,13 @@ public class AuthService {
             throw new BadCredentialsException("Contraseña incorrecta");
         }
 
+        if (user.getState() == 0) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Este usuario está deshabilitado");
+        }
+
         return user;
     }
+
 }
 
 

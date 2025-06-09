@@ -17,7 +17,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "Rol")
+@Table(name = "rol")
 public class Rol extends Auditable {
 
     @Id

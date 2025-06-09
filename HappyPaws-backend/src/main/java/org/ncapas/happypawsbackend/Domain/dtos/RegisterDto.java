@@ -4,16 +4,13 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.ncapas.happypawsbackend.Domain.Entities.Rol;
-import org.springframework.stereotype.Service;
 
 @Getter
 @Setter
 @Data
 public class RegisterDto {
 
-
-    @NotBlank
+    @NotBlank(message = "El nombre no puede estar vacío")
     private String name;
 
     @NotBlank(message = "El DUI no puede estar vacío")
@@ -24,14 +21,11 @@ public class RegisterDto {
     @Pattern(regexp = "^[0-9]{8}$", message = "El teléfono debe tener 8 dígitos numéricos")
     private String phone;
 
-    @NotBlank
-    @Email
+    @NotBlank(message = "El correo no puede estar vacío")
+    @Email(message = "El correo debe tener un formato válido")
     private String email;
 
-    @NotBlank
-    @Size(min = 6)
+    @NotBlank(message = "La contraseña no puede estar vacía")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&\\-_])[A-Za-z\\d@$!%*?&\\-_]{8,}$", message = "La contraseña debe tener al menos 8 caracteres, incluyendo mayúscula, minúscula, número y símbolo")
     private String password;
-
-
-
 }

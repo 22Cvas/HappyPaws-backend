@@ -59,9 +59,9 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     private void seedDefaultUsers() {
-        createUserIfNotExists("admin@happypaws.com", "123456", "ADMIN", "12345678-1");
-        createUserIfNotExists("colaborador@happypaws.com", "123456", "COLABORADOR", "12345678-2");
-        createUserIfNotExists("adoptante@happypaws.com", "123456", "ADOPTANTE", "12345678-3");
+        createUserIfNotExists("admin@happypaws.com", "Admin123!", "ADMIN", "12345678-1");
+        createUserIfNotExists("colaborador@happypaws.com", "Colab456!", "COLABORADOR", "12345678-2");
+        createUserIfNotExists("adoptante@happypaws.com", "Adop789!", "ADOPTANTE", "12345678-3");
     }
 
     private void createUserIfNotExists(String email, String password, String rolName, String dui) {

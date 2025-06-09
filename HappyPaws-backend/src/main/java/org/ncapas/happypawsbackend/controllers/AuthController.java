@@ -1,6 +1,7 @@
 package org.ncapas.happypawsbackend.controllers;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.ncapas.happypawsbackend.Domain.Entities.AccessToken;
@@ -28,6 +29,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -115,14 +117,14 @@ public class AuthController {
 
     @GetMapping("/refresh")
     public ResponseEntity<?> refresh(@CookieValue(name = "refresh_token", required = false)
-                                         String refreshTokenCookie) {
-        System.out.println("refresh_token cookie recibida: " + refreshTokenCookie); // debug
+                                     String refreshTokenCookie) {
         if (refreshTokenCookie == null || refreshTokenCookie.isBlank()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No se encontro refresh token");
         }
 
         Optional<RefreshToken> storedToken = refreshTokenService.getByToken(refreshTokenCookie);
-        if (storedToken.isEmpty() || storedToken.get().isRevoked() || refreshTokenService.isTokenExpired(storedToken.get())) {
+        if (storedToken.isEmpty() || storedToken.get().isRevoked()
+                || refreshTokenService.isTokenExpired(storedToken.get())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token invalido o expirado");
         }
 
@@ -130,6 +132,33 @@ public class AuthController {
         String newAccessToken = jwtUtil.generateToken(user);
         return ResponseEntity.ok(Map.of("token", newAccessToken));
     }
+
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = Arrays.stream(request.getCookies())
+                .filter(cookie -> "refresh_token".equals(cookie.getName()))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElse(null);
+
+        if (refreshToken != null) {
+            refreshTokenService.revokeToken(refreshToken);
+        }
+
+        ResponseCookie deleteCookie = ResponseCookie.from("refresh_token", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Strict")
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+                .body(Map.of("message", "Sesion cerrada exitosamente"));
+    }
+    
 }
 
 

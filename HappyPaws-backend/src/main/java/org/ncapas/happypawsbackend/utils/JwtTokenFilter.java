@@ -31,12 +31,18 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
+        String path = request.getRequestURI();
 
-        if (path.equals("/auth/login") || path.equals("/auth/register")) {
+        // ignorar rutas públicas
+        if (path.startsWith("/auth/login") ||
+                path.startsWith("/auth/register") ||
+                path.startsWith("/auth/refresh") ||
+                path.startsWith("/auth/logout")) {
             filterChain.doFilter(request, response);
             return;
         }
+
+        String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
@@ -48,9 +54,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     );
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 });
-
             }
         }
+
         filterChain.doFilter(request, response);
     }
+
 }

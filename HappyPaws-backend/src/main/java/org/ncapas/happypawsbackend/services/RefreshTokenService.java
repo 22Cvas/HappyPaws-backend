@@ -4,7 +4,6 @@ import jakarta.transaction.Transactional;
 import org.ncapas.happypawsbackend.Domain.Entities.RefreshToken;
 import org.ncapas.happypawsbackend.Domain.Entities.User;
 import org.ncapas.happypawsbackend.repositories.RefreshTokenRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +16,8 @@ public class RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public RefreshTokenService(RefreshTokenRepository repoo) {
-        this.refreshTokenRepository = repoo;
+    public RefreshTokenService(RefreshTokenRepository refreshTokenRepository) {
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     @Value("${jwt.refresh.expiration}")
@@ -39,11 +38,21 @@ public class RefreshTokenService {
     }
 
     @Transactional
-    public void revokeToken(User user) {
-        refreshTokenRepository.deleteByUser(user);
+    public void revokeToken(String token) {
+        refreshTokenRepository.findByToken(token).ifPresent(rt -> {
+            System.out.println("✅ Token revocado: " + token); // debug opcional
+            rt.setRevoked(true);
+            refreshTokenRepository.save(rt);
+        });
     }
 
     public Optional<RefreshToken> getByToken(String token) {
         return refreshTokenRepository.findByToken(token);
     }
+
+    @Transactional
+    public void revokeTokenByUser(User user) {
+        refreshTokenRepository.deleteByUser(user); // este borra, no revoca
+    }
 }
+

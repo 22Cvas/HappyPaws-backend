@@ -33,6 +33,6 @@ public class RefreshToken {
     private Instant expiredAt;
 
     // token revocado
-    @Column(nullable = false)
+    @Column(name = "revoked", nullable = false)
     private boolean revoked;
 }
