@@ -126,8 +126,6 @@ public class DataSeeder implements CommandLineRunner {
 
             createBreedIfNotExists("Labrador", dog);
             createBreedIfNotExists("Pastor Alemán", dog);
-            createBreedIfNotExists("Siames", cat);
-            createBreedIfNotExists("Persa", cat);
         }
     }
 

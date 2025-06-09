@@ -1,0 +1,108 @@
+package org.ncapas.happypawsbackend.services;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.ncapas.happypawsbackend.Domain.Entities.Breed;
+import org.ncapas.happypawsbackend.Domain.Entities.Species;
+import org.ncapas.happypawsbackend.Domain.dtos.BreedDto;
+import org.ncapas.happypawsbackend.Domain.dtos.BreedResponseDto;
+import org.ncapas.happypawsbackend.repositories.BreedRepository;
+import org.ncapas.happypawsbackend.repositories.SpeciesRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class BreedService {
+
+    private final BreedRepository breedRepository;
+    private final SpeciesRepository speciesRepository;
+
+    private String normalizeName(String name) {
+        if (name == null) return null;
+        String trimmed = name.trim().toLowerCase();
+        if (trimmed.length() > 3 && trimmed.endsWith("s")) {
+            trimmed = trimmed.substring(0, trimmed.length() - 1);
+        }
+        return trimmed;
+    }
+
+    public List<BreedResponseDto> getAll() {
+        return breedRepository.findAll().stream()
+                .map(this::toResponseDto)
+                .toList();
+    }
+
+    public BreedResponseDto getById(Integer id) {
+        Breed breed = breedRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Raza no encontrada"));
+        return toResponseDto(breed);
+    }
+
+    @Transactional
+    public BreedResponseDto create(BreedDto dto) {
+        String normalized = normalizeName(dto.getName());
+
+        boolean exists = breedRepository.findAll().stream()
+                .anyMatch(b -> normalizeName(b.getName()).equals(normalized));
+
+        if (exists) {
+            throw new RuntimeException("Ya existe una raza con un nombre similar");
+        }
+
+        Species species = speciesRepository.findById(dto.getSpeciesId())
+                .orElseThrow(() -> new RuntimeException("Especie no encontrada"));
+
+        Breed breed = new Breed();
+        breed.setName(dto.getName().trim());
+        breed.setSpecies(species);
+
+        Breed saved = breedRepository.save(breed);
+        return toResponseDto(saved);
+    }
+
+    @Transactional
+    public BreedResponseDto update(Integer id, BreedDto dto) {
+        Breed breed = breedRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Raza no encontrada"));
+
+        String normalized = normalizeName(dto.getName());
+
+        boolean exists = breedRepository.findAll().stream()
+                .anyMatch(b -> !b.getId_breed().equals(id)
+                        && normalizeName(b.getName()).equals(normalized));
+
+        if (exists) {
+            throw new RuntimeException("Ya existe otra raza con un nombre similar");
+        }
+
+        Species species = speciesRepository.findById(dto.getSpeciesId())
+                .orElseThrow(() -> new RuntimeException("Especie no encontrada"));
+
+        breed.setName(dto.getName().trim());
+        breed.setSpecies(species);
+
+        Breed updated = breedRepository.save(breed);
+        return toResponseDto(updated);
+    }
+
+    @Transactional
+    public String delete(Integer id) {
+        if (!breedRepository.existsById(id)) {
+            throw new RuntimeException("La raza no existe");
+        }
+
+        breedRepository.deleteById(id);
+        return "Raza eliminada correctamente";
+    }
+
+    private BreedResponseDto toResponseDto(Breed breed) {
+        return new BreedResponseDto(
+                breed.getId_breed(),
+                breed.getName(),
+                breed.getSpecies().getId_species(),
+                breed.getSpecies().getName()
+        );
+    }
+}

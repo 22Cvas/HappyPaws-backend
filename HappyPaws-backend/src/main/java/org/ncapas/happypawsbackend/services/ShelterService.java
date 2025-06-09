@@ -16,6 +16,10 @@ public class ShelterService {
 
     private final ShelterRepository shelterRepository;
 
+    private String normalizeName(String name) {
+        return name == null ? null : name.trim().toLowerCase();
+    }
+
     public List<ShelterResponseDto> getAllShelters() {
         return shelterRepository.findAll()
                 .stream()
@@ -32,8 +36,13 @@ public class ShelterService {
 
     @Transactional
     public Shelter createShelter(ShelterDto dto) {
-        if (shelterRepository.existsByName(dto.getName())) {
-            throw new RuntimeException("Nombre del shelter ya existe");
+        String normalized = normalizeName(dto.getName());
+
+        boolean exists = shelterRepository.findAll().stream()
+                .anyMatch(s -> normalizeName(s.getName()).equals(normalized));
+
+        if (exists) {
+            throw new RuntimeException("Ya existe un refugio con un nombre similar");
         }
 
         Shelter shelter = new Shelter();
@@ -60,22 +69,25 @@ public class ShelterService {
         Shelter shelter = shelterRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Refugio no encontrado"));
 
-        shelter.setName(dto.getName());
+        String normalized = normalizeName(dto.getName());
+
+        boolean exists = shelterRepository.findAll().stream()
+                .anyMatch(s -> !s.getId_shelter().equals(id) &&
+                        normalizeName(s.getName()).equals(normalized));
+
+        if (exists) {
+            throw new RuntimeException("Ya existe otro refugio con un nombre similar");
+        }
+
+        shelter.setName(dto.getName().trim());
         shelter.setAddress(dto.getAddress());
         shelter.setPhone(Integer.parseInt(dto.getPhone()));
         shelter.setEmail(dto.getEmail());
 
         Shelter updated = shelterRepository.save(shelter);
-
-        ShelterResponseDto response = new ShelterResponseDto();
-        response.setId(updated.getId_shelter());
-        response.setName(updated.getName());
-        response.setAddress(updated.getAddress());
-        response.setPhone(String.valueOf(updated.getPhone()));
-        response.setEmail(updated.getEmail());
-
         return toResponseDto(updated);
     }
+
 
     @Transactional
     public void deleteShelter(Integer id) {
