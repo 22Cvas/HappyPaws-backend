@@ -13,11 +13,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -55,12 +52,12 @@ public class User  extends Auditable implements UserDetails {
     @JoinColumn(name = "id_rol", nullable = false, foreignKey = @ForeignKey(name = "fk_user_rol"))
     private Rol rol;
 
-    @OneToMany(mappedBy = "Users")
+    @OneToMany(mappedBy = "users")
     private List<Aplication> aplications;
 
-    @OneToMany
-    @JoinColumn(name = "id_token")
-    private List<Token> tokens;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<AccessToken> accessTokens;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

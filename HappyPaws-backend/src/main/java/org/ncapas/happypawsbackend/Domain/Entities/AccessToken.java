@@ -1,20 +1,15 @@
 package org.ncapas.happypawsbackend.Domain.Entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
-import java.util.UUID;
-
 @Entity
+@Table(name = "access_tokens")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "tokens")
-public class Token {
-
+public class AccessToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -34,8 +29,8 @@ public class Token {
         BEARER
     }
 
-    @ManyToOne
-    @JoinColumn(name = "id_user")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 }
 

@@ -7,7 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.DecodingException;
 import io.jsonwebtoken.security.Keys;
 import jakarta.validation.Valid;
-import lombok.Value;
+import org.springframework.beans.factory.annotation.Value;
 import org.ncapas.happypawsbackend.Domain.Entities.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -23,10 +23,18 @@ import java.util.stream.Collectors;
 @Component
 public class JwtUtils {
 
-    //@Value("${jwt.secret}")
+    // se carga desde application.properties
+    @Value("${jwt.secret}")
     private String jwtSecret; //Crear variable de la secret key
-    private final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
+    @Value("${jwt.expiration}")
+    private long jwtExpiration;
+
+    private SecretKey getSecretKey() {
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes());
+    }
+
+    // genera un JWT con roles
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", userDetails.getAuthorities().stream()
@@ -36,16 +44,18 @@ public class JwtUtils {
         return createToken(claims, userDetails.getUsername());
     }
 
+    // crear el JWT con fecha de creacion y expiracion
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 horas
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
+                .signWith(getSecretKey())
                 .compact();
     }
 
+    // extrae el email desde el token
     public String extractUsername(String token) {
         return extractClaims(token).getSubject();
     }
@@ -55,22 +65,26 @@ public class JwtUtils {
         return claims.get("roles", List.class);
     }
 
+    // verifica que el token no haya expirado y sea el del usuario
     public boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
+    // verifica fecha de expiracion del token
     private boolean isTokenExpired(String token) {
         return extractClaims(token).getExpiration().before(new Date());
     }
 
     public Claims extractClaims(String token) {
-        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+        return Jwts.parser().setSigningKey(getSecretKey()).parseClaimsJws(token).getBody();
     }
+
+    // valida el token
     public boolean isTokenValid(String token) {
         try {
             token = token.replace("Bearer ", "").trim();
-            Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
+            Jwts.parser().setSigningKey(getSecretKey()).parseClaimsJws(token);
             return true;
         } catch (DecodingException e) {
             System.err.println("Error de decodificación: " + e.getMessage());
@@ -81,13 +95,13 @@ public class JwtUtils {
         return false;
     }
 
+    // genera token de refresh
     public String generateRefreshToken(User user){
-        return null;
+        return java.util.UUID.randomUUID().toString(); // lo gaurda en la bd
     }
 
     public String extractEmail(String token) {
-return null;
+        return extractClaims(token).getSubject(); //
     }
-
 
 }
