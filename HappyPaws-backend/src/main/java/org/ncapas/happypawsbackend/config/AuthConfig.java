@@ -40,19 +40,34 @@ public class AuthConfig {
     @Autowired
     private UserService userService;
 
+    // permiteeee all temporalmente
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login", "/auth/register", "/auth/refresh", "/auth/logout").permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
-
     }
+
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        http.csrf(csrf -> csrf.disable())
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers("/auth/login", "/auth/register", "/auth/refresh", "/auth/logout", "enums/genders", "enums/languages", "enums/statuses",
+//                                //eliminar este eprmisoooooooooo
+//                                "/pets/register").permitAll()
+//                        .anyRequest().authenticated()
+//                )
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+//
+//        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+//        return http.build();
+//
+//    }
 
     @Bean
     public UserDetailsService userDetailsService() {

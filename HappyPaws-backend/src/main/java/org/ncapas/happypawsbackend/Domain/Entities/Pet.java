@@ -8,7 +8,7 @@ import org.ncapas.happypawsbackend.Domain.Audit.Auditable;
 import org.ncapas.happypawsbackend.Domain.Enums.Gender;
 import org.ncapas.happypawsbackend.Domain.Enums.PetStatus;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -46,10 +46,10 @@ public class Pet  extends Auditable {
     private boolean fullyVaccinated;
 
     @Column(name = "entry_Date")
-    private Date entry_Date;
+    private LocalDate entry_Date;
 
     @Column(name = "review_Date")
-    private Date review_Date;
+    private LocalDate  review_Date;
 
     @Column(name = "description")
     private String description;

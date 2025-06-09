@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ncapas.happypawsbackend.Domain.Audit.Auditable;
+import org.ncapas.happypawsbackend.Domain.Enums.PetSize;
 
 import java.util.Date;
 
@@ -14,7 +15,6 @@ import java.util.Date;
 @AllArgsConstructor
 @Table(name = "Size")
 
-
 public class Size extends Auditable {
 
     @Id
@@ -22,7 +22,7 @@ public class Size extends Auditable {
     @Column(name = "id_size")
     private Integer id_size;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "name", unique = true, nullable = false)
+    private PetSize name;
 
 }

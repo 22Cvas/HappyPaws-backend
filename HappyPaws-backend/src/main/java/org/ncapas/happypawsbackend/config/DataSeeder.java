@@ -1,16 +1,13 @@
 package org.ncapas.happypawsbackend.config;
 
-import org.ncapas.happypawsbackend.Domain.Entities.Rol;
-import org.ncapas.happypawsbackend.Domain.Entities.Size;
-import org.ncapas.happypawsbackend.Domain.Entities.User;
+import org.ncapas.happypawsbackend.Domain.Entities.*;
 import org.ncapas.happypawsbackend.Domain.Enums.UserRol;
-import org.ncapas.happypawsbackend.repositories.RoleRepository;
-import org.ncapas.happypawsbackend.repositories.SizeRepository;
-import org.ncapas.happypawsbackend.repositories.UserRepository;
+import org.ncapas.happypawsbackend.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.ncapas.happypawsbackend.Domain.Enums.PetSize;
 
 @Component
 public class DataSeeder implements CommandLineRunner {
@@ -22,16 +19,29 @@ public class DataSeeder implements CommandLineRunner {
     private SizeRepository sizeRepository;
 
     @Autowired
+
     private UserRepository userRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private ShelterRepository shelterRepository;
+
+    @Autowired
+    private SpeciesRepository speciesRepository;
+
+    @Autowired
+    private BreedRepository breedRepository;
 
     @Override
     public void run(String... args){
         seedRoles();
         seedSizes();
         seedDefaultUsers();
+        seedShelters();
+        seedSpecies();
+        seedBreeds();
     }
 
     private void seedRoles(){
@@ -44,19 +54,21 @@ public class DataSeeder implements CommandLineRunner {
         }
     }
 
+
     private void seedSizes(){
-        createSizeIfNotExists("PEQUEÑO");
-        createSizeIfNotExists("MEDIANO");
-        createSizeIfNotExists("GRANDE");
+        for (PetSize size : PetSize.values()) {
+            createSizeIfNotExists(size);
+        }
     }
 
-    private void createSizeIfNotExists(String name) {
-        if (sizeRepository.findByNameIgnoreCase(name).isEmpty()) {
+    private void createSizeIfNotExists(PetSize name) {
+        if (sizeRepository.findByName(name).isEmpty()) {
             Size size = new Size();
             size.setName(name);
             sizeRepository.save(size);
         }
     }
+
 
     private void seedDefaultUsers() {
         createUserIfNotExists("admin@happypaws.com", "Admin123!", "ADMIN", "12345678-1");
@@ -82,4 +94,49 @@ public class DataSeeder implements CommandLineRunner {
         }
     }
 
+    private void seedShelters() {
+        if (shelterRepository.count() == 0) {
+            Shelter shelter = new Shelter();
+            shelter.setName("Refugio Central");
+            shelter.setAddress("San Salvador, San Salvador");
+            shelter.setPhone(22223333);
+            shelter.setEmail("contacto@refugiocentral.com");
+            shelterRepository.save(shelter);
+        }
+    }
+
+    private void seedSpecies() {
+        if (speciesRepository.findAll().isEmpty()) {
+            Species dog = new Species();
+            dog.setName("Perro");
+            speciesRepository.save(dog);
+
+            Species cat = new Species();
+            cat.setName("Gato");
+            speciesRepository.save(cat);
+        }
+    }
+
+    private void seedBreeds() {
+        if (breedRepository.count() == 0) {
+            Species dog = speciesRepository.findByName("Perro")
+                    .orElseThrow(() -> new RuntimeException("Especie 'Perro' no encontrada"));
+            Species cat = speciesRepository.findByName("Gato")
+                    .orElseThrow(() -> new RuntimeException("Especie 'Gato' no encontrada"));
+
+            createBreedIfNotExists("Labrador", dog);
+            createBreedIfNotExists("Pastor Alemán", dog);
+            createBreedIfNotExists("Siames", cat);
+            createBreedIfNotExists("Persa", cat);
+        }
+    }
+
+    private void createBreedIfNotExists(String name, Species species) {
+        if (breedRepository.findByName(name).isEmpty()) {
+            Breed breed = new Breed();
+            breed.setName(name);
+            breed.setSpecies(species);
+            breedRepository.save(breed);
+        }
+    }
 }

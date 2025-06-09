@@ -13,9 +13,6 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "Shelter")
-
-
-
 public class Shelter extends Auditable {
 
     @Id

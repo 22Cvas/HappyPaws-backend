@@ -1,6 +1,7 @@
 package org.ncapas.happypawsbackend.repositories;
 
 import org.ncapas.happypawsbackend.Domain.Entities.Pet;
+import org.ncapas.happypawsbackend.Domain.Enums.PetStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,8 +12,5 @@ import java.util.UUID;
 
 @Repository
 public interface PetRepository extends JpaRepository<Pet, Integer> {
-
-
-
-
+    List<Pet> findByStatus(PetStatus status);
 }

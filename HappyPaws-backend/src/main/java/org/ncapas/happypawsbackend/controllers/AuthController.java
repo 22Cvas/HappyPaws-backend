@@ -158,7 +158,7 @@ public class AuthController {
                 .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
                 .body(Map.of("message", "Sesion cerrada exitosamente"));
     }
-    
+
 }
 
 
