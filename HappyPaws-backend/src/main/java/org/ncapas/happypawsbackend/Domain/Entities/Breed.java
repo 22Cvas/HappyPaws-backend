@@ -2,6 +2,7 @@ package org.ncapas.happypawsbackend.Domain.Entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ncapas.happypawsbackend.Domain.Audit.Auditable;
@@ -12,6 +13,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(name = "Breed")
 
 public class Breed  extends Auditable {

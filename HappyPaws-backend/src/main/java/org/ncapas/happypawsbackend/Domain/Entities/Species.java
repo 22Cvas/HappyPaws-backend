@@ -3,6 +3,7 @@ package org.ncapas.happypawsbackend.Domain.Entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.ncapas.happypawsbackend.Domain.Audit.Auditable;
@@ -14,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "Species")
+@Builder
 public class Species extends Auditable {
 
     @Id

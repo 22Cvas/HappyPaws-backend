@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class EnumResponseDto {
-    private String id;
-    private String value;
+    private Integer  id;
+    private String name;
 }

@@ -22,6 +22,4 @@ public class PetResponse {
         private String photoUrl;
         private Instant entryDate;
 
-
-
 }
