@@ -16,6 +16,7 @@ import org.ncapas.happypawsbackend.Domain.Entities.Shelter;
 
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -69,9 +70,13 @@ public class PetService {
 
     public void createPet(PetRegisterDto register) {
         Pet pet = new Pet();
+
+        // genero el uuid manualmente, porque hibernate no me lo gaurdaba en la bd xd
+        pet.setId_pet(UUID.randomUUID());
+
         pet.setName(register.getName());
 
-        // convertir edad a meses
+        // calculo la edad y la paso a meses
         int edadEnMeses = register.getAgeUnit().equalsIgnoreCase("años")
                 ? register.getAgeValue() * 12
                 : register.getAgeValue();
@@ -87,9 +92,11 @@ public class PetService {
         pet.setDescription(register.getDescription());
         pet.setHistory(register.getHistory());
         pet.setPhotoURL(register.getPhotoURL());
-        // se guarda como DISPONIBLE al inicio
+
+        // todas las mascotas entran siendo disponibles
         pet.setStatus(PetStatus.DISPONIBLE);
 
+        // relaciones
         pet.setShelter(shelterRepository.findById(register.getShelterId())
                 .orElseThrow(() -> new RuntimeException("Shelter no encontrado")));
         pet.setSpecies(speciesRepository.findById(register.getSpeciesId())
@@ -102,20 +109,21 @@ public class PetService {
         petRepository.save(pet);
     }
 
-    public PetResponse getPetById(Integer id) {
+
+    public PetResponse getPetById(UUID id) {
         Pet pet = petRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Mascota no encontrada"));
         return toPetResponse(pet);
     }
 
-    public void deletePet(Integer id) {
+    public void deletePet(UUID id) {
         if (!petRepository.existsById(id)) {
             throw new RuntimeException("Mascota no encontrada");
         }
         petRepository.deleteById(id);
     }
 
-    public PetResponse patchPet(Integer id, PetPatchDto dto) {
+    public PetResponse patchPet(UUID id, PetPatchDto dto) {
         Pet pet = petRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Mascota no encontrada"));
 

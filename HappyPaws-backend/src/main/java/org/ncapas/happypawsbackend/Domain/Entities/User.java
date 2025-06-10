@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -25,9 +26,9 @@ import java.util.List;
 public class User  extends Auditable implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id_user")
-    private Integer id_user;
+    private UUID id_user;
 
     @Column(name = "name")
     private String name;

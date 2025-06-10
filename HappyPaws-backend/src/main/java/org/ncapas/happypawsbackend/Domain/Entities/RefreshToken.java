@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -17,8 +18,8 @@ import java.time.Instant;
 public class RefreshToken {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     // user
     @ManyToOne(fetch = FetchType.LAZY)

@@ -7,9 +7,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface AccessTokenRepository extends JpaRepository<AccessToken, Integer> {
+public interface AccessTokenRepository extends JpaRepository<AccessToken, UUID> {
     Optional<AccessToken> findByToken(String token);
     List<AccessToken> findAllByUser(User user);
 }

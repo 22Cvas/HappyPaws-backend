@@ -4,24 +4,24 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 import org.ncapas.happypawsbackend.Domain.Audit.Auditable;
 import org.ncapas.happypawsbackend.Domain.Enums.Gender;
 import org.ncapas.happypawsbackend.Domain.Enums.PetStatus;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "Pet")
-
 public class Pet  extends Auditable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_pet")
-    private Integer id_pet;
+    @Column(name = "id_pet", updatable = false, nullable = false)
+    private UUID id_pet;
 
     @Column(name = "name")
     private String name;

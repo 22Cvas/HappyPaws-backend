@@ -3,6 +3,8 @@ package org.ncapas.happypawsbackend.Domain.Entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "access_tokens")
 @Data
@@ -11,8 +13,8 @@ import lombok.*;
 @AllArgsConstructor
 public class AccessToken {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(unique = true)
     private String token;

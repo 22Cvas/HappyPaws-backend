@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/pets")
@@ -31,22 +32,20 @@ public class PetController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getPetById(@PathVariable Integer id) {
+    public ResponseEntity<?> getPetById(@PathVariable UUID id) {
         return ResponseEntity.ok(petService.getPetById(id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletePet(@PathVariable Integer id) {
+    public ResponseEntity<?> deletePet(@PathVariable UUID id) {
         petService.deletePet(id);
         return ResponseEntity.ok("Mascota eliminada correctamente");
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<PetResponse> patchPet(@PathVariable Integer id, @RequestBody PetPatchDto dto) {
+    public ResponseEntity<PetResponse> patchPet(@PathVariable UUID id, @RequestBody PetPatchDto dto) {
         PetResponse updated = petService.patchPet(id, dto);
         return ResponseEntity.ok(updated);
     }
-
-
 
 }

@@ -13,13 +13,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "Pet_Attribute")
-
 public class Pet_Attribute {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_pet_attribute")
-    private UUID id_pet_attribute;
+    private Integer id_pet_attribute;
 
     @Column(name = "attribute")
     private Integer attribute;
