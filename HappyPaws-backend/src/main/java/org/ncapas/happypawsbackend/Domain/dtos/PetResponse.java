@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -23,4 +24,6 @@ public class PetResponse {
         private String photoUrl;
         private Instant entryDate;
 
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)
+        private List<PetAttributeResponseDto> attributes;
 }

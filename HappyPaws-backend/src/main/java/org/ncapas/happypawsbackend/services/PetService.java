@@ -1,18 +1,15 @@
 package org.ncapas.happypawsbackend.services;
 
 import lombok.NoArgsConstructor;
-import org.ncapas.happypawsbackend.Domain.Entities.Pet;
+import org.ncapas.happypawsbackend.Domain.Entities.*;
 import org.ncapas.happypawsbackend.Domain.Enums.PetStatus;
+import org.ncapas.happypawsbackend.Domain.dtos.PetAttributeResponseDto;
 import org.ncapas.happypawsbackend.Domain.dtos.PetPatchDto;
 import org.ncapas.happypawsbackend.Domain.dtos.PetRegisterDto;
 import org.ncapas.happypawsbackend.Domain.dtos.PetResponse;
 import org.ncapas.happypawsbackend.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.ncapas.happypawsbackend.Domain.Entities.Size;
-import org.ncapas.happypawsbackend.Domain.Entities.Breed;
-import org.ncapas.happypawsbackend.Domain.Entities.Species;
-import org.ncapas.happypawsbackend.Domain.Entities.Shelter;
 
 import java.time.ZoneOffset;
 import java.util.List;
@@ -38,9 +35,25 @@ public class PetService {
     @Autowired
     private SizeRepository sizeRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     private PetResponse toPetResponse(Pet pet) {
+        List<PetAttributeResponseDto> attributeDtos = null;
+
+        if (pet.getAttributes() != null && !pet.getAttributes().isEmpty()) {
+            attributeDtos = pet.getAttributes().stream()
+                    .map(attr -> PetAttributeResponseDto.builder()
+                            .id(attr.getId_pet_attribute())
+                            .attributeName(attr.getAttributeName())
+                            .attributeValue(attr.getAttributeValue())
+                            .petName(pet.getName())
+                            .build())
+                    .collect(Collectors.toList());
+        }
+
         return PetResponse.builder()
-                .id(pet.getId_pet())
+                .id(pet.getId())
                 .name(pet.getName())
                 .species(pet.getSpecies() != null ? pet.getSpecies().getName() : null)
                 .breed(pet.getBreed() != null ? pet.getBreed().getName() : null)
@@ -55,6 +68,7 @@ public class PetService {
                 .entryDate(pet.getEntry_Date() != null
                         ? pet.getEntry_Date().atStartOfDay().toInstant(ZoneOffset.UTC)
                         : null)
+                .attributes(attributeDtos)
                 .build();
     }
 
@@ -72,7 +86,7 @@ public class PetService {
         Pet pet = new Pet();
 
         // genero el uuid manualmente, porque hibernate no me lo gaurdaba en la bd xd
-        pet.setId_pet(UUID.randomUUID());
+        pet.setId(UUID.randomUUID());
 
         pet.setName(register.getName());
 
@@ -81,6 +95,13 @@ public class PetService {
                 ? register.getAgeValue() * 12
                 : register.getAgeValue();
         pet.setAge(edadEnMeses);
+
+
+        // setea un UUID "falso" para crear la mascota por el momento
+        User user = userRepository.findById(UUID.fromString("598c7a8f-822d-48a2-aa68-860bc8aacf49"))
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ese UUID"));
+
+        pet.setUser(user);
 
         pet.setGender(register.getGender());
         pet.setWeight(register.getWeight());
@@ -151,6 +172,31 @@ public class PetService {
 
         petRepository.save(pet);
         return toPetResponse(pet);
+    }
+
+    public List<PetResponse> getPetsByStatus(PetStatus status) {
+        List<Pet> pets = petRepository.findByStatus(status);
+        return pets.stream().map(this::toPetResponse).collect(Collectors.toList());
+    }
+
+    public List<PetResponse> getPetsByUser(UUID userId) {
+        List<Pet> pets = petRepository.findByUserId(userId);
+        return pets.stream().map(this::toPetResponse).collect(Collectors.toList());
+    }
+
+    public List<PetResponse> getVaccinatedPets() {
+        List<Pet> pets = petRepository.findByFullyVaccinatedTrue();
+        return pets.stream().map(this::toPetResponse).collect(Collectors.toList());
+    }
+
+    public List<PetResponse> getSterilizedPets() {
+        List<Pet> pets = petRepository.findBySterilizedTrue();
+        return pets.stream().map(this::toPetResponse).collect(Collectors.toList());
+    }
+
+    public List<PetResponse> getDewormedPets() {
+        List<Pet> pets = petRepository.findByParasiteFreeTrue();
+        return pets.stream().map(this::toPetResponse).collect(Collectors.toList());
     }
 
 }

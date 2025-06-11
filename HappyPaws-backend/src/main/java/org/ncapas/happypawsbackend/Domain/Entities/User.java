@@ -28,7 +28,7 @@ public class User  extends Auditable implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id_user")
-    private UUID id_user;
+    private UUID id;
 
     @Column(name = "name")
     private String name;
