@@ -57,8 +57,8 @@ public class Pet  extends Auditable {
     @Column(name = "history")
     private String history;
 
-    @Column(name = "photoURL")
-    private String photoURL;
+    //@Column(name = "photoURL")
+    //private String photoURL;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
@@ -95,5 +95,8 @@ public class Pet  extends Auditable {
     )
     private List<Pet_Attribute> attributes;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id", referencedColumnName = "id")
+    private Image image;
 
 }
