@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface PetAttributeRepository extends JpaRepository<Pet_Attribute, Integer> {
-    List<Pet_Attribute> findByPet_Id(UUID petId);
+    List<Pet_Attribute> findAll();
 }

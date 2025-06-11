@@ -1,6 +1,7 @@
 package org.ncapas.happypawsbackend.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.ncapas.happypawsbackend.Domain.Entities.Pet_Attribute;
 import org.ncapas.happypawsbackend.Domain.dtos.PetAttributeRequestDto;
 import org.ncapas.happypawsbackend.Domain.dtos.PetAttributeResponseDto;
 import org.ncapas.happypawsbackend.services.PetAttributeService;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/pet_attributes")
@@ -25,9 +27,9 @@ public class PetAttributeController {
         return ResponseEntity.ok("Atributo creado con éxito");
     }
 
-    @GetMapping("/bypet/{petId}")
-    public ResponseEntity<List<PetAttributeResponseDto>> getByPet(@PathVariable UUID petId) {
-        return ResponseEntity.ok(petattributeservice.getByPet(petId));
+    @GetMapping("/all")
+    public ResponseEntity<List<PetAttributeResponseDto>> getAllAttributes() {
+        return ResponseEntity.ok(petattributeservice.getAllAttributes());
     }
 
     @PutMapping("/update/{id}")

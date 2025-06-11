@@ -87,7 +87,13 @@ public class Pet  extends Auditable {
     @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Aplication> applications;
 
-    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
+    @JoinTable(
+            name = "pet_attribute_pet",
+            joinColumns = @JoinColumn(name = "id_pet"),
+            inverseJoinColumns = @JoinColumn(name = "id_pet_attribute")
+    )
     private List<Pet_Attribute> attributes;
+
 
 }

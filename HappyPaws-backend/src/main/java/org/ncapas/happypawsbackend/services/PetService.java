@@ -38,19 +38,19 @@ public class PetService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PetAttributeRepository petAttributeRepository;
+
     private PetResponse toPetResponse(Pet pet) {
         List<PetAttributeResponseDto> attributeDtos = null;
 
-        if (pet.getAttributes() != null && !pet.getAttributes().isEmpty()) {
-            attributeDtos = pet.getAttributes().stream()
-                    .map(attr -> PetAttributeResponseDto.builder()
-                            .id(attr.getId_pet_attribute())
-                            .attributeName(attr.getAttributeName())
-                            .attributeValue(attr.getAttributeValue())
-                            .petName(pet.getName())
-                            .build())
-                    .collect(Collectors.toList());
-        }
+        attributeDtos = pet.getAttributes().stream()
+                .map(attr -> PetAttributeResponseDto.builder()
+                        .id(attr.getId_pet_attribute())
+                        .attributeName(attr.getAttributeName())
+                        .attributeValue(attr.getAttributeValue())
+                        .build())
+                .collect(Collectors.toList());
 
         return PetResponse.builder()
                 .id(pet.getId())
@@ -98,7 +98,7 @@ public class PetService {
 
 
         // setea un UUID "falso" para crear la mascota por el momento
-        User user = userRepository.findById(UUID.fromString("598c7a8f-822d-48a2-aa68-860bc8aacf49"))
+        User user = userRepository.findById(UUID.fromString("11dc3a2b-8a10-487d-8b33-19c40b95608e"))
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ese UUID"));
 
         pet.setUser(user);
@@ -126,6 +126,19 @@ public class PetService {
                 .orElseThrow(() -> new RuntimeException("Raza no encontrada")));
         pet.setSize(sizeRepository.findById(register.getSizeId())
                 .orElseThrow(() -> new RuntimeException("Tamaño no encontrado")));
+
+        // atributos
+        if (register.getPetAttributeIds() != null && !register.getPetAttributeIds().isEmpty()) {
+            List<Integer> ids = register.getPetAttributeIds();
+            List<Pet_Attribute> attributes = petAttributeRepository.findAllById(ids);
+
+            if (attributes.size() != ids.size()) {
+                throw new RuntimeException("Uno o más atributos no existen");
+            }
+
+            pet.setAttributes(attributes);
+        }
+
 
         petRepository.save(pet);
     }
@@ -163,7 +176,7 @@ public class PetService {
         if (dto.getDescription() != null) pet.setDescription(dto.getDescription());
         if (dto.getHistory() != null) pet.setHistory(dto.getHistory());
         if (dto.getPhotoURL() != null) pet.setPhotoURL(dto.getPhotoURL());
-        if (dto.getStatus() != null) {pet.setStatus(dto.getStatus());}
+        if (dto.getStatus() != null) pet.setStatus(dto.getStatus());
 
         if (dto.getBreedId() != null) pet.setBreed(Breed.builder().id_breed(dto.getBreedId()).build());
         if (dto.getSpeciesId() != null) pet.setSpecies(Species.builder().id_species(dto.getSpeciesId()).build());
@@ -171,8 +184,27 @@ public class PetService {
         if (dto.getShelterId() != null) pet.setShelter(Shelter.builder().id_shelter(dto.getShelterId()).build());
 
         petRepository.save(pet);
+
+        // esto para actualizar atributos, aunque este nulll
+        if (dto.getPetAttributeIds() != null) {
+            if (dto.getPetAttributeIds().isEmpty()) {
+                pet.setAttributes(List.of()); // Limpiar todos
+            } else {
+                List<Integer> ids = dto.getPetAttributeIds();
+                List<Pet_Attribute> nuevos = petAttributeRepository.findAllById(ids);
+
+                if (nuevos.size() != ids.size()) {
+                    throw new RuntimeException("Uno o más atributos no existen");
+                }
+
+                pet.setAttributes(nuevos);
+            }
+        }
+
+        petRepository.save(pet);
         return toPetResponse(pet);
     }
+
 
     public List<PetResponse> getPetsByStatus(PetStatus status) {
         List<Pet> pets = petRepository.findByStatus(status);

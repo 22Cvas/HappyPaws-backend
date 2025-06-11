@@ -17,31 +17,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PetAttributeService {
 
-    private final PetRepository petRepository;
     private final PetAttributeRepository attributeRepository;
 
     public void create(PetAttributeRequestDto dto) {
-        Pet pet = petRepository.findById(dto.getPetId())
-                .orElseThrow(() -> new RuntimeException("Mascota no encontrada"));
-
         Pet_Attribute attr = new Pet_Attribute();
         attr.setAttributeName(dto.getAttributeName());
         attr.setAttributeValue(dto.getAttributeValue());
-        attr.setPet(pet);
 
         attributeRepository.save(attr);
-    }
-
-    public List<PetAttributeResponseDto> getByPet(UUID petId) {
-        return attributeRepository.findByPet_Id(petId)
-                .stream()
-                .map(attr -> PetAttributeResponseDto.builder()
-                        .id(attr.getId_pet_attribute())
-                        .attributeName(attr.getAttributeName())
-                        .attributeValue(attr.getAttributeValue())
-                        .petName(attr.getPet().getName())
-                        .build())
-                .collect(Collectors.toList());
     }
 
     public void update(Integer id, PetAttributeRequestDto dto) {
@@ -60,4 +43,21 @@ public class PetAttributeService {
         }
         attributeRepository.deleteById(id);
     }
+
+    public List<PetAttributeResponseDto> getAllAttributes() {
+        return attributeRepository.findAll().stream()
+                .map(attr -> PetAttributeResponseDto.builder()
+                        .id(attr.getId_pet_attribute())
+                        .attributeName(attr.getAttributeName())
+                        .attributeValue(attr.getAttributeValue())
+                        .pets(attr.getPets().stream()
+                                .map(p -> PetAttributeResponseDto.PetInfo.builder()
+                                        .id(p.getId())
+                                        .name(p.getName())
+                                        .build())
+                                .collect(Collectors.toList()))
+                        .build())
+                .collect(Collectors.toList());
+    }
+
 }

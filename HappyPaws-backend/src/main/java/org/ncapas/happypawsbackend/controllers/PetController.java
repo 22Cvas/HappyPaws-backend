@@ -74,5 +74,4 @@ public class PetController {
         return ResponseEntity.ok(petService.getDewormedPets());
     }
 
-
 }

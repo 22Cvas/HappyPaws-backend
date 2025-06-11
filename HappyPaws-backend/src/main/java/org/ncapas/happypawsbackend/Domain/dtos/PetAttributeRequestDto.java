@@ -8,5 +8,4 @@ import java.util.UUID;
 public class PetAttributeRequestDto {
     private String attributeName;
     private String attributeValue;
-    private UUID petId;
 }
