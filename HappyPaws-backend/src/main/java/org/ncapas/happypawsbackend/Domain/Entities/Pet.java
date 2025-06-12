@@ -73,7 +73,7 @@ public class Pet  extends Auditable {
     private Species species;
 
     @ManyToOne
-    @JoinColumn(name = "id_breed", nullable = false, foreignKey = @ForeignKey(name = "fk_Race_Characteristics"))
+    @JoinColumn(name = "id_breed", nullable = true, foreignKey = @ForeignKey(name = "fk_Race_Characteristics"))
     private Breed breed;
 
     @ManyToOne

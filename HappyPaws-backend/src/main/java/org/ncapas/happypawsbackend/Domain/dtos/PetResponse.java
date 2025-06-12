@@ -15,7 +15,10 @@ public class PetResponse {
         private UUID id;
         private String name;
         private String species;
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
         private String breed;
+
         private String size;
         private String gender;
         private Integer age;

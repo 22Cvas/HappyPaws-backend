@@ -98,7 +98,7 @@ public class PetService {
 
 
         // setea un UUID "falso" para crear la mascota por el momento
-        User user = userRepository.findById(UUID.fromString("11dc3a2b-8a10-487d-8b33-19c40b95608e"))
+        User user = userRepository.findById(UUID.fromString("eee2bc1d-fd60-4271-a344-8fada40f926e"))
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ese UUID"));
 
         pet.setUser(user);
@@ -122,8 +122,14 @@ public class PetService {
                 .orElseThrow(() -> new RuntimeException("Shelter no encontrado")));
         pet.setSpecies(speciesRepository.findById(register.getSpeciesId())
                 .orElseThrow(() -> new RuntimeException("Especie no encontrada")));
-        pet.setBreed(breedRepository.findById(register.getBreedId())
-                .orElseThrow(() -> new RuntimeException("Raza no encontrada")));
+        // raza opcional
+        if (register.getBreedId() != null) {
+            pet.setBreed(breedRepository.findById(register.getBreedId())
+                    .orElseThrow(() -> new RuntimeException("Raza no encontrada")));
+        } else {
+            pet.setBreed(null);
+        }
+
         pet.setSize(sizeRepository.findById(register.getSizeId())
                 .orElseThrow(() -> new RuntimeException("Tamaño no encontrado")));
 
@@ -178,7 +184,14 @@ public class PetService {
         if (dto.getPhotoURL() != null) pet.setPhotoURL(dto.getPhotoURL());
         if (dto.getStatus() != null) pet.setStatus(dto.getStatus());
 
-        if (dto.getBreedId() != null) pet.setBreed(Breed.builder().id_breed(dto.getBreedId()).build());
+
+        if (dto.getBreedId() != null) {
+            pet.setBreed(breedRepository.findById(dto.getBreedId())
+                    .orElseThrow(() -> new RuntimeException("Raza no encontrada")));
+        } else {
+            pet.setBreed(null);
+        }
+
         if (dto.getSpeciesId() != null) pet.setSpecies(Species.builder().id_species(dto.getSpeciesId()).build());
         if (dto.getSizeId() != null) pet.setSize(Size.builder().id_size(dto.getSizeId()).build());
         if (dto.getShelterId() != null) pet.setShelter(Shelter.builder().id_shelter(dto.getShelterId()).build());
