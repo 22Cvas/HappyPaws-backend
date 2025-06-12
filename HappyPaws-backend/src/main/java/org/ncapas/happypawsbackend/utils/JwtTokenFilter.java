@@ -34,15 +34,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
 
         // ignorar rutas públicas
-        if (path.startsWith("/auth/login") ||
-                path.startsWith("/auth/register") ||
-                path.startsWith("/auth/refresh") ||
-                path.startsWith("/auth/logout") ||
-                path.startsWith("enums/genders")  ||
-                path.startsWith("enums/sizes")  ||
-                path.startsWith("enums/statuses")  ||
-                //eliminar este permiso pls
-                path.startsWith("/pets/register") ) {
+        if (path.startsWith("/auth/") || path.startsWith("/enums/")) {
             filterChain.doFilter(request, response);
             return;
         }

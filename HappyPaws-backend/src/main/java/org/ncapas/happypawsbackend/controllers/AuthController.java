@@ -102,6 +102,7 @@ public class AuthController {
             ResponseCookie cookie = ResponseCookie.from("refresh_token", refreshToken.getToken())
                     .httpOnly(true)
                     .secure(false)
+                    .sameSite("Lax")
                     .path("/")
                     .maxAge(7 * 24 * 60 * 60)
                     .build();
@@ -145,18 +146,49 @@ public class AuthController {
         if (refreshToken != null) {
             refreshTokenService.revokeToken(refreshToken);
         }
-
-        ResponseCookie deleteCookie = ResponseCookie.from("refresh_token", "")
+        ResponseCookie deleteRefreshToken = ResponseCookie.from("refresh_token", "")
                 .httpOnly(true)
-                .secure(true)
+                .secure(false)
                 .path("/")
                 .maxAge(0)
                 .sameSite("Strict")
                 .build();
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
-                .body(Map.of("message", "Sesion cerrada exitosamente"));
+        ResponseCookie deleteAccessToken = ResponseCookie.from("access_token", "")
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Lax")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, deleteRefreshToken.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, deleteAccessToken.toString());
+
+        return ResponseEntity.ok(Map.of("message", "Sesión cerrada exitosamente"));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getMe(@CookieValue(name = "refresh_token", required = false) String refreshTokenCookie) {
+        if (refreshTokenCookie == null || refreshTokenCookie.isBlank()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No se encontró token");
+        }
+
+        Optional<RefreshToken> storedToken = refreshTokenService.getByToken(refreshTokenCookie);
+        if (storedToken.isEmpty() || storedToken.get().isRevoked() ||
+                refreshTokenService.isTokenExpired(storedToken.get())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido o expirado");
+        }
+
+        User user = storedToken.get().getUser();
+
+        return ResponseEntity.ok(Map.of(
+                "name", user.getName(),
+                "email", user.getEmail(),
+                "phone", user.getPhone(),
+                "dui", user.getDUI(),
+                "rol", user.getRol().getName().getLabel()
+        ));
     }
 
 }
