@@ -11,6 +11,6 @@ import java.util.UUID;
 
 @Repository
 public interface AplicationRepository extends JpaRepository<Aplication, UUID> {
-   
+
 
 }

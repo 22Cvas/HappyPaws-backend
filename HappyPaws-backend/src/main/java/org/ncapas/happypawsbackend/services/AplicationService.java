@@ -94,4 +94,32 @@ public class AplicationService {
         }
         return dtos;
     }
+
+    public AplicationResponse getAplicationById(UUID id) {
+        Optional<Aplication> opt = aplicationRepository.findById(id);
+        if (opt.isEmpty()) {
+            throw new EntityNotFoundException("Aplicación no encontrada con id: " + id);
+        }
+        Aplication a = opt.get();
+
+        AplicationResponse dto = new AplicationResponse();
+        dto.setId(a.getId_aplication());
+        dto.setAplicationDate(a.getAplication_Date());
+        dto.setOtherPets(a.isOther_Pets());
+        dto.setReasonAdoption(a.getReason_adoption());
+        dto.setEnoughSpace(a.isEnough_space());
+        dto.setEnoughTime(a.isEnough_time());
+        dto.setLocationDescription(a.getLocationDescription());
+        dto.setAplicationState(String.valueOf(a.getApplicationState()));
+
+        if (a.getUsers() != null) {
+            dto.setUserId(a.getUsers().getId_user());
+        }
+        if (a.getPet() != null) {
+            dto.setPetId(a.getPet().getId_pet());
+        }
+
+        return dto;
+    }
+
 }

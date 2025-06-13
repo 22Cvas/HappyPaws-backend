@@ -22,13 +22,13 @@ public class AplicationController {
     private AplicationService aplicationService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createAplication(@RequestBody @Valid AplicationRegisterDto request){
+    public ResponseEntity<?> createAplication(@RequestBody @Valid AplicationRegisterDto request) {
         aplicationService.createAplication(request);
         return ResponseEntity.ok("Solicitud enviada con éxito!");
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteAplication(@PathVariable UUID id){
+    public ResponseEntity<?> deleteAplication(@PathVariable UUID id) {
         aplicationService.deleteAplication(id);
         return ResponseEntity.ok("Solicitud Eliminada con éxito!");
     }
@@ -38,10 +38,16 @@ public class AplicationController {
         aplicationService.updateApplicationState(id, request);
         return ResponseEntity.ok().build();
     }
+
     @GetMapping("/all")
     public ResponseEntity<List<AplicationResponse>> getAllApplications() {
         List<AplicationResponse> list = aplicationService.getAllApplications();
         return ResponseEntity.ok(list);
     }
 
+    @GetMapping("/{id}")
+    public AplicationResponse getAplicationById(@PathVariable UUID id) {
+        return aplicationService.getAplicationById(id);
+
+    }
 }
