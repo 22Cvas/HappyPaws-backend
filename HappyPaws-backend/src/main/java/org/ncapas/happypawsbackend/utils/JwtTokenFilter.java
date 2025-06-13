@@ -40,9 +40,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 path.startsWith("/auth/logout") ||
                 path.startsWith("enums/genders")  ||
                 path.startsWith("enums/sizes")  ||
-                path.startsWith("enums/statuses")  ||
-                //eliminar este permiso pls
-                path.startsWith("/pets/register") ) {
+                path.startsWith("enums/statuses")) {
             filterChain.doFilter(request, response);
             return;
         }

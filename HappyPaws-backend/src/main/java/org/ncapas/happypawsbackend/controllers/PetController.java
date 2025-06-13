@@ -8,6 +8,7 @@ import org.ncapas.happypawsbackend.Domain.dtos.PetResponse;
 import org.ncapas.happypawsbackend.services.PetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class PetController {
     private final PetService petService;
 
     @PostMapping("/register")
+    @PreAuthorize("hasAnyRole('ADMIN', 'COLABORADOR')")
     public ResponseEntity<?> registerPet(@Valid @RequestBody PetRegisterDto dto) {
         petService.createPet(dto);
         return ResponseEntity.ok().body("Mascota registrada exitosamente");

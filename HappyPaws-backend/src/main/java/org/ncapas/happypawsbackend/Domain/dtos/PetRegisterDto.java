@@ -22,7 +22,7 @@ public class PetRegisterDto {
 
     @NotBlank
     @Pattern(regexp = "AÑOS|MESES", message = "La unidad de edad debe ser 'AÑOS' o 'MESES'")
-    private String ageUnit; // "meses" o "años"
+    private String ageUnit;
 
     @NotNull(message = "El genero es obligatorio")
     private Gender gender;

@@ -1,0 +1,39 @@
+package org.ncapas.happypawsbackend.controllers;
+
+import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
+import org.ncapas.happypawsbackend.Domain.Entities.Aplication;
+import org.ncapas.happypawsbackend.Domain.dtos.AplicationRegisterDto;
+import org.ncapas.happypawsbackend.Domain.dtos.AplicationUpdateDto;
+import org.ncapas.happypawsbackend.services.AplicationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/aplication")
+public class AplicationController {
+
+    @Autowired
+    private AplicationService aplicationService;
+
+    @PostMapping("/create")
+    public ResponseEntity<?> createAplication(@RequestBody @Valid AplicationRegisterDto request){
+        aplicationService.createAplication(request);
+        return ResponseEntity.ok("Solicitud enviada con éxito!");
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteAplication(@PathVariable UUID id){
+        aplicationService.deleteAplication(id);
+        return ResponseEntity.ok("Solicitud Eliminada con éxito!");
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> updateState(@PathVariable UUID id, @RequestBody @Valid AplicationUpdateDto request) {
+        aplicationService.updateApplicationState(id, request);
+        return ResponseEntity.ok().build();
+    }
+}
