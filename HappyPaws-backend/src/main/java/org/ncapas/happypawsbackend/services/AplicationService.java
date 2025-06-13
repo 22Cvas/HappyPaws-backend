@@ -6,6 +6,7 @@ import org.ncapas.happypawsbackend.Domain.Entities.Pet;
 import org.ncapas.happypawsbackend.Domain.Entities.User;
 import org.ncapas.happypawsbackend.Domain.Enums.ApplicationState;
 import org.ncapas.happypawsbackend.Domain.dtos.AplicationRegisterDto;
+import org.ncapas.happypawsbackend.Domain.dtos.AplicationResponse;
 import org.ncapas.happypawsbackend.Domain.dtos.AplicationUpdateDto;
 import org.ncapas.happypawsbackend.repositories.AplicationRepository;
 import org.ncapas.happypawsbackend.repositories.PetRepository;
@@ -13,8 +14,9 @@ import org.ncapas.happypawsbackend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
+
+import static java.util.Arrays.stream;
 
 @Service
 public class AplicationService {
@@ -51,7 +53,7 @@ public class AplicationService {
         aplicationRepository.save(aplication);
     }
 
-    public void deleteAplication(UUID id){
+    public void deleteAplication(UUID id) {
         if (!aplicationRepository.existsById(id)) {
             throw new RuntimeException("Solicitud no encontrada");
         }
@@ -64,5 +66,32 @@ public class AplicationService {
 
         application.setApplicationState(ApplicationState.valueOf(request.getAplicationStatus()));
         aplicationRepository.save(application);
+    }
+
+    public List<AplicationResponse> getAllApplications() {
+        List<Aplication> applications = aplicationRepository.findAll();
+        List<AplicationResponse> dtos = new ArrayList<>();
+
+        for (Aplication ap : applications) {
+            AplicationResponse dto = new AplicationResponse();
+            dto.setId(ap.getId_aplication());
+            dto.setAplicationDate(ap.getAplication_Date());
+            dto.setOtherPets(ap.isOther_Pets());
+            dto.setReasonAdoption(ap.getReason_adoption());
+            dto.setEnoughSpace(ap.isEnough_space());
+            dto.setEnoughTime(ap.isEnough_time());
+            dto.setLocationDescription(ap.getLocationDescription());
+            dto.setAplicationState(String.valueOf(ap.getApplicationState()));
+
+            if (ap.getUsers() != null) {
+                dto.setUserId(ap.getUsers().getId_user());
+            }
+            if (ap.getPet() != null) {
+                dto.setPetId(ap.getPet().getId_pet());
+            }
+
+            dtos.add(dto);
+        }
+        return dtos;
     }
 }

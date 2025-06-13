@@ -1,16 +1,18 @@
 package org.ncapas.happypawsbackend.controllers;
 
 import jakarta.validation.Valid;
-import jakarta.websocket.server.PathParam;
 import org.ncapas.happypawsbackend.Domain.Entities.Aplication;
 import org.ncapas.happypawsbackend.Domain.dtos.AplicationRegisterDto;
+import org.ncapas.happypawsbackend.Domain.dtos.AplicationResponse;
 import org.ncapas.happypawsbackend.Domain.dtos.AplicationUpdateDto;
 import org.ncapas.happypawsbackend.services.AplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/aplication")
@@ -36,4 +38,10 @@ public class AplicationController {
         aplicationService.updateApplicationState(id, request);
         return ResponseEntity.ok().build();
     }
+    @GetMapping("/all")
+    public ResponseEntity<List<AplicationResponse>> getAllApplications() {
+        List<AplicationResponse> list = aplicationService.getAllApplications();
+        return ResponseEntity.ok(list);
+    }
+
 }
