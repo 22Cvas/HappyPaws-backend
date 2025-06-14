@@ -64,7 +64,7 @@ public class PetService {
                 .age(pet.getAge())
                 .sterilized(pet.isSterilized())
                 .status(pet.getStatus() != null ? pet.getStatus().name() : null)
-                .photoUrl(pet.getPhotoURL())
+                .photoUrl(pet.getImage() != null ? pet.getImage().getImgURL() : null)
                 .entryDate(pet.getEntry_Date() != null
                         ? pet.getEntry_Date().atStartOfDay().toInstant(ZoneOffset.UTC)
                         : null)
@@ -112,7 +112,15 @@ public class PetService {
         pet.setReview_Date(register.getReviewDate());
         pet.setDescription(register.getDescription());
         pet.setHistory(register.getHistory());
-        pet.setPhotoURL(register.getPhotoURL());
+        if (register.getPhotoURL() != null && !register.getPhotoURL().isBlank()) {
+            Image image = new Image();
+            image.setId(UUID.randomUUID());
+            image.setName("Foto de " + register.getName());
+            image.setImgURL(register.getPhotoURL());
+            image.setImageId("img-" + UUID.randomUUID());
+
+            pet.setImage(image);
+        }
 
         // todas las mascotas entran siendo disponibles
         pet.setStatus(PetStatus.DISPONIBLE);
@@ -175,7 +183,17 @@ public class PetService {
         if (dto.getReviewDate() != null) pet.setReview_Date(dto.getReviewDate());
         if (dto.getDescription() != null) pet.setDescription(dto.getDescription());
         if (dto.getHistory() != null) pet.setHistory(dto.getHistory());
-        if (dto.getPhotoURL() != null) pet.setPhotoURL(dto.getPhotoURL());
+        if (dto.getPhotoURL() != null && !dto.getPhotoURL().isBlank()) {
+            Image image = pet.getImage();
+            if (image == null) {
+                image = new Image();
+                image.setId(UUID.randomUUID());
+                image.setName("Foto de " + pet.getName());
+                image.setImageId("img-" + UUID.randomUUID());
+                pet.setImage(image);
+            }
+            image.setImgURL(dto.getPhotoURL());
+        }
         if (dto.getStatus() != null) pet.setStatus(dto.getStatus());
 
         if (dto.getBreedId() != null) pet.setBreed(Breed.builder().id_breed(dto.getBreedId()).build());

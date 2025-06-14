@@ -18,10 +18,8 @@ import java.util.UUID;
 public class Image extends Auditable {
 
     @Id
-    //@GeneratedValue(strategy = GenerationType.UUID)
-    //@Column(name = "id_Image")
-    //private UUID id;
-    @Column(name = "id_Image", updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
     @NotBlank
