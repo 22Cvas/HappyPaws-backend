@@ -1,5 +1,8 @@
 package org.ncapas.happypawsbackend.Domain.Enums;
 
+import lombok.Getter;
+
+@Getter
 public enum ApplicationState {
     PENDIENTE("Pendiente"),
     ACEPTADA("Aceptada"),
@@ -11,7 +14,4 @@ public enum ApplicationState {
         this.label = label;
     }
 
-    public String getLabel() {
-        return label;
-    }
 }

@@ -21,6 +21,7 @@ public class Pet  extends Auditable {
 
     @Id
     @Column(name = "id_pet", updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "name")
