@@ -20,6 +20,7 @@ public class UserService {
     private UserRepository userRepository;
 
     public Optional<User> findUserByEmail(String email) {
+
         return userRepository.findUserByEmail(email);
     }
 
@@ -46,6 +47,7 @@ public class UserService {
         }
         return request;
     }
+
     public Optional<UserDto> getUserById(UUID id) {
         return userRepository.findById(id)
                 .map(user -> {
@@ -59,6 +61,7 @@ public class UserService {
                     return dto;
                 });
     }
+
     public void deleteUser(UUID id) {
         if (!userRepository.existsById(id)) {
             throw new RuntimeException("Usuario no encontrado con ID: " + id);
@@ -86,6 +89,19 @@ public class UserService {
         return dto;
     }
 
+    public Optional<UserDto> getUserByEmail(String email) {
+        return userRepository.findUserByEmail(email)
+                .map(user -> {
+                    UserDto dto = new UserDto();
+                    dto.setId_user(user.getId_user());
+                    dto.setName(user.getName());
+                    dto.setEmail(user.getEmail());
+                    dto.setDUI(user.getDUI());
+                    dto.setPhone(user.getPhone());
+                    dto.setRol(user.getRol().getName().name());
+                    return dto;
+                });
 
+    }
 }
 

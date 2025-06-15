@@ -1,14 +1,17 @@
 package org.ncapas.happypawsbackend.controllers;
 
+import jakarta.validation.Valid;
+import org.ncapas.happypawsbackend.Domain.Entities.User;
 import org.ncapas.happypawsbackend.Domain.dtos.UserDto;
 import org.ncapas.happypawsbackend.services.UserService;
+import org.ncapas.happypawsbackend.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/user")
@@ -16,6 +19,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserServiceImpl userServiceimpl;
 
     @GetMapping("/all")
     public ResponseEntity<List<UserDto>> getAllUsers() {
@@ -50,7 +56,18 @@ public class UserController {
         }
     }
 
+    @GetMapping("/email")
+    public ResponseEntity<?> getUserByEmail(@RequestParam @Valid String email) {
+        try {
+            return userService.getUserByEmail(email)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
 
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        }
+
+    }
 
 
 
