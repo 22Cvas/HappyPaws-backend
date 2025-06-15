@@ -10,6 +10,7 @@ import org.ncapas.happypawsbackend.Domain.Enums.Gender;
 import org.ncapas.happypawsbackend.Domain.Enums.PetStatus;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class PetRegisterDto {
@@ -51,11 +52,9 @@ public class PetRegisterDto {
 
     private PetStatus status;
 
-
     @NotNull
     private Integer shelterId;
 
-    @NotNull
     private Integer breedId;
 
     @NotNull
@@ -63,4 +62,6 @@ public class PetRegisterDto {
 
     @NotNull
     private Integer sizeId;
+
+    private List<Integer> petAttributeIds;
 }

@@ -30,17 +30,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
         String path = request.getRequestURI();
-
-        // ignorar rutas públicas
-        if (path.startsWith("/auth/login") ||
-                path.startsWith("/auth/register") ||
-                path.startsWith("/auth/refresh") ||
-                path.startsWith("/auth/logout") ||
-                path.startsWith("enums/genders")  ||
-                path.startsWith("enums/sizes")  ||
-                path.startsWith("enums/statuses")) {
+        if (path.startsWith("/auth/") || path.startsWith("/enums/")) {
             filterChain.doFilter(request, response);
             return;
         }

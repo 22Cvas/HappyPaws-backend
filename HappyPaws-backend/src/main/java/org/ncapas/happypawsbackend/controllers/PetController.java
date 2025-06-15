@@ -2,6 +2,7 @@ package org.ncapas.happypawsbackend.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.ncapas.happypawsbackend.Domain.Enums.PetStatus;
 import org.ncapas.happypawsbackend.Domain.dtos.PetPatchDto;
 import org.ncapas.happypawsbackend.Domain.dtos.PetRegisterDto;
 import org.ncapas.happypawsbackend.Domain.dtos.PetResponse;
@@ -48,6 +49,31 @@ public class PetController {
     public ResponseEntity<PetResponse> patchPet(@PathVariable UUID id, @RequestBody PetPatchDto dto) {
         PetResponse updated = petService.patchPet(id, dto);
         return ResponseEntity.ok(updated);
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<PetResponse>> getPetsByStatus(@PathVariable String status) {
+        return ResponseEntity.ok(petService.getPetsByStatus(PetStatus.valueOf(status.toUpperCase())));
+    }
+
+    @GetMapping("/creator/{userId}")
+    public ResponseEntity<List<PetResponse>> getPetsByCreator(@PathVariable UUID userId) {
+        return ResponseEntity.ok(petService.getPetsByUser(userId));
+    }
+
+    @GetMapping("/vaccinated")
+    public ResponseEntity<List<PetResponse>> getVaccinatedPets() {
+        return ResponseEntity.ok(petService.getVaccinatedPets());
+    }
+
+    @GetMapping("/sterilized")
+    public ResponseEntity<List<PetResponse>> getSterilizedPets() {
+        return ResponseEntity.ok(petService.getSterilizedPets());
+    }
+
+    @GetMapping("/dewormed")
+    public ResponseEntity<List<PetResponse>> getDewormedPets() {
+        return ResponseEntity.ok(petService.getDewormedPets());
     }
 
 }

@@ -30,10 +30,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+<<<<<<< HEAD
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+=======
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
+>>>>>>> ada/dev
 import java.util.Map;
 import java.util.Optional;
 
@@ -49,52 +56,29 @@ public class AuthConfig  {
     @Autowired
     private UserService userService;
 
-    // permiteeee all temporalmente
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors(Customizer.withDefaults());
-        http.csrf(csrf -> csrf.disable())
+        http
+                .cors(cors -> cors
+                        .configurationSource(request -> {
+                            CorsConfiguration config = new CorsConfiguration();
+                            config.setAllowedOrigins(List.of("http://localhost:5173"));
+                            config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+                            config.setAllowedHeaders(List.of("*"));
+                            config.setAllowCredentials(true);
+                            return config;
+                        })
+                )
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("auth/login", "auth/register").permitAll()
-                        .requestMatchers("pets/register").hasAnyAuthority("ROLE_ADMIN", "ROLE_COLABORADOR")
+                        .requestMatchers("/auth/**", "/enums/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
-
-    //Para la conexión con el frontend
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
-
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        http.csrf(csrf -> csrf.disable())
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/auth/login", "/auth/register", "/auth/refresh", "/auth/logout", "enums/genders", "enums/languages", "enums/statuses",
-//                                //eliminar este eprmisoooooooooo
-//                                "/pets/register").permitAll()
-//                        .anyRequest().authenticated()
-//                )
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-//
-//        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-//        return http.build();
-//
-//    }
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -129,5 +113,20 @@ public class AuthConfig  {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        org.springframework.web.cors.UrlBasedCorsConfigurationSource source =
+                new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
 
 }

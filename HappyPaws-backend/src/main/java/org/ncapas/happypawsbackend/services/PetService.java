@@ -1,18 +1,15 @@
 package org.ncapas.happypawsbackend.services;
 
 import lombok.NoArgsConstructor;
-import org.ncapas.happypawsbackend.Domain.Entities.Pet;
+import org.ncapas.happypawsbackend.Domain.Entities.*;
 import org.ncapas.happypawsbackend.Domain.Enums.PetStatus;
+import org.ncapas.happypawsbackend.Domain.dtos.PetAttributeResponseDto;
 import org.ncapas.happypawsbackend.Domain.dtos.PetPatchDto;
 import org.ncapas.happypawsbackend.Domain.dtos.PetRegisterDto;
 import org.ncapas.happypawsbackend.Domain.dtos.PetResponse;
 import org.ncapas.happypawsbackend.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.ncapas.happypawsbackend.Domain.Entities.Size;
-import org.ncapas.happypawsbackend.Domain.Entities.Breed;
-import org.ncapas.happypawsbackend.Domain.Entities.Species;
-import org.ncapas.happypawsbackend.Domain.Entities.Shelter;
 
 import java.time.ZoneOffset;
 import java.util.List;
@@ -38,9 +35,25 @@ public class PetService {
     @Autowired
     private SizeRepository sizeRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PetAttributeRepository petAttributeRepository;
+
     private PetResponse toPetResponse(Pet pet) {
+        List<PetAttributeResponseDto> attributeDtos = null;
+
+        attributeDtos = pet.getAttributes().stream()
+                .map(attr -> PetAttributeResponseDto.builder()
+                        .id(attr.getId_pet_attribute())
+                        .attributeName(attr.getAttributeName())
+                        .attributeValue(attr.getAttributeValue())
+                        .build())
+                .collect(Collectors.toList());
+
         return PetResponse.builder()
-                .id(pet.getId_pet())
+                .id(pet.getId())
                 .name(pet.getName())
                 .species(pet.getSpecies() != null ? pet.getSpecies().getName() : null)
                 .breed(pet.getBreed() != null ? pet.getBreed().getName() : null)
@@ -55,6 +68,7 @@ public class PetService {
                 .entryDate(pet.getEntry_Date() != null
                         ? pet.getEntry_Date().atStartOfDay().toInstant(ZoneOffset.UTC)
                         : null)
+                .attributes(attributeDtos)
                 .build();
     }
 
@@ -72,7 +86,7 @@ public class PetService {
         Pet pet = new Pet();
 
         // genero el uuid manualmente, porque hibernate no me lo gaurdaba en la bd xd
-        pet.setId_pet(UUID.randomUUID());
+        pet.setId(UUID.randomUUID());
 
         pet.setName(register.getName());
 
@@ -81,6 +95,13 @@ public class PetService {
                 ? register.getAgeValue() * 12
                 : register.getAgeValue();
         pet.setAge(edadEnMeses);
+
+
+        // setea un UUID "falso" para crear la mascota por el momento
+        User user = userRepository.findById(UUID.fromString("eee2bc1d-fd60-4271-a344-8fada40f926e"))
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ese UUID"));
+
+        pet.setUser(user);
 
         pet.setGender(register.getGender());
         pet.setWeight(register.getWeight());
@@ -101,10 +122,29 @@ public class PetService {
                 .orElseThrow(() -> new RuntimeException("Shelter no encontrado")));
         pet.setSpecies(speciesRepository.findById(register.getSpeciesId())
                 .orElseThrow(() -> new RuntimeException("Especie no encontrada")));
-        pet.setBreed(breedRepository.findById(register.getBreedId())
-                .orElseThrow(() -> new RuntimeException("Raza no encontrada")));
+        // raza opcional
+        if (register.getBreedId() != null) {
+            pet.setBreed(breedRepository.findById(register.getBreedId())
+                    .orElseThrow(() -> new RuntimeException("Raza no encontrada")));
+        } else {
+            pet.setBreed(null);
+        }
+
         pet.setSize(sizeRepository.findById(register.getSizeId())
                 .orElseThrow(() -> new RuntimeException("Tamaño no encontrado")));
+
+        // atributos
+        if (register.getPetAttributeIds() != null && !register.getPetAttributeIds().isEmpty()) {
+            List<Integer> ids = register.getPetAttributeIds();
+            List<Pet_Attribute> attributes = petAttributeRepository.findAllById(ids);
+
+            if (attributes.size() != ids.size()) {
+                throw new RuntimeException("Uno o más atributos no existen");
+            }
+
+            pet.setAttributes(attributes);
+        }
+
 
         petRepository.save(pet);
     }
@@ -142,15 +182,66 @@ public class PetService {
         if (dto.getDescription() != null) pet.setDescription(dto.getDescription());
         if (dto.getHistory() != null) pet.setHistory(dto.getHistory());
         if (dto.getPhotoURL() != null) pet.setPhotoURL(dto.getPhotoURL());
-        if (dto.getStatus() != null) {pet.setStatus(dto.getStatus());}
+        if (dto.getStatus() != null) pet.setStatus(dto.getStatus());
 
-        if (dto.getBreedId() != null) pet.setBreed(Breed.builder().id_breed(dto.getBreedId()).build());
+
+        if (dto.getBreedId() != null) {
+            pet.setBreed(breedRepository.findById(dto.getBreedId())
+                    .orElseThrow(() -> new RuntimeException("Raza no encontrada")));
+        } else {
+            pet.setBreed(null);
+        }
+
         if (dto.getSpeciesId() != null) pet.setSpecies(Species.builder().id_species(dto.getSpeciesId()).build());
         if (dto.getSizeId() != null) pet.setSize(Size.builder().id_size(dto.getSizeId()).build());
         if (dto.getShelterId() != null) pet.setShelter(Shelter.builder().id_shelter(dto.getShelterId()).build());
 
         petRepository.save(pet);
+
+        // esto para actualizar atributos, aunque este nulll
+        if (dto.getPetAttributeIds() != null) {
+            if (dto.getPetAttributeIds().isEmpty()) {
+                pet.setAttributes(List.of()); // Limpiar todos
+            } else {
+                List<Integer> ids = dto.getPetAttributeIds();
+                List<Pet_Attribute> nuevos = petAttributeRepository.findAllById(ids);
+
+                if (nuevos.size() != ids.size()) {
+                    throw new RuntimeException("Uno o más atributos no existen");
+                }
+
+                pet.setAttributes(nuevos);
+            }
+        }
+
+        petRepository.save(pet);
         return toPetResponse(pet);
+    }
+
+
+    public List<PetResponse> getPetsByStatus(PetStatus status) {
+        List<Pet> pets = petRepository.findByStatus(status);
+        return pets.stream().map(this::toPetResponse).collect(Collectors.toList());
+    }
+
+    public List<PetResponse> getPetsByUser(UUID userId) {
+        List<Pet> pets = petRepository.findByUserId(userId);
+        return pets.stream().map(this::toPetResponse).collect(Collectors.toList());
+    }
+
+    public List<PetResponse> getVaccinatedPets() {
+        List<Pet> pets = petRepository.findByFullyVaccinatedTrue();
+        return pets.stream().map(this::toPetResponse).collect(Collectors.toList());
+    }
+
+    public List<PetResponse> getSterilizedPets() {
+        List<Pet> pets = petRepository.findBySterilizedTrue();
+        return pets.stream().map(this::toPetResponse).collect(Collectors.toList());
+    }
+
+    public List<PetResponse> getDewormedPets() {
+        List<Pet> pets = petRepository.findByParasiteFreeTrue();
+        return pets.stream().map(this::toPetResponse).collect(Collectors.toList());
     }
 
 }

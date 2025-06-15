@@ -54,7 +54,7 @@ public class Aplication extends Auditable {
     @JoinColumn(name = "id_user", nullable = false, foreignKey = @ForeignKey(name = "fk_Users_Aplication"))
     private User users;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "id_pet", nullable = false, foreignKey = @ForeignKey(name = "fk_Pet_Aplication"))
     private Pet pet;
 

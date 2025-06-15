@@ -4,12 +4,12 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
 import org.ncapas.happypawsbackend.Domain.Audit.Auditable;
 import org.ncapas.happypawsbackend.Domain.Enums.Gender;
 import org.ncapas.happypawsbackend.Domain.Enums.PetStatus;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -21,7 +21,7 @@ public class Pet  extends Auditable {
 
     @Id
     @Column(name = "id_pet", updatable = false, nullable = false)
-    private UUID id_pet;
+    private UUID id;
 
     @Column(name = "name")
     private String name;
@@ -73,11 +73,27 @@ public class Pet  extends Auditable {
     private Species species;
 
     @ManyToOne
-    @JoinColumn(name = "id_breed", nullable = false, foreignKey = @ForeignKey(name = "fk_Race_Characteristics"))
+    @JoinColumn(name = "id_breed", nullable = true, foreignKey = @ForeignKey(name = "fk_Race_Characteristics"))
     private Breed breed;
 
     @ManyToOne
     @JoinColumn(name = "id_size", nullable = false, foreignKey = @ForeignKey(name = "fk_Size_Characteristics"))
     private Size size;
+
+    @ManyToOne
+    @JoinColumn(name = "id_user", nullable = false, foreignKey = @ForeignKey(name = "fk_user_pet"))
+    private User user;
+
+    @OneToMany(mappedBy = "pet", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Aplication> applications;
+
+    @ManyToMany
+    @JoinTable(
+            name = "pet_attribute_pet",
+            joinColumns = @JoinColumn(name = "id_pet"),
+            inverseJoinColumns = @JoinColumn(name = "id_pet_attribute")
+    )
+    private List<Pet_Attribute> attributes;
+
 
 }
