@@ -9,6 +9,7 @@ import org.ncapas.happypawsbackend.Domain.dtos.PetRegisterDto;
 import org.ncapas.happypawsbackend.Domain.dtos.PetResponse;
 import org.ncapas.happypawsbackend.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.ZoneOffset;
@@ -83,25 +84,23 @@ public class PetService {
 
 
     public void createPet(PetRegisterDto register) {
+        // Obtener el email del usuario autenticado en el login, ya guarda el id al crear una mascota
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
         Pet pet = new Pet();
 
-        // genero el uuid manualmente, porque hibernate no me lo gaurdaba en la bd xd
-        pet.setId(UUID.randomUUID());
 
+ //       pet.setId(UUID.randomUUID()); se lo asigne como valor generado en la entidad,
+        //ojo no se si vaya a dar error si lo tenian como update el aplicationproperties
         pet.setName(register.getName());
 
-        // calculo la edad y la paso a meses
+        // Convertir edad a meses
         int edadEnMeses = register.getAgeUnit().equalsIgnoreCase("años")
                 ? register.getAgeValue() * 12
                 : register.getAgeValue();
         pet.setAge(edadEnMeses);
-
-
-        // setea un UUID "falso" para crear la mascota por el momento
-        User user = userRepository.findById(UUID.fromString("e1ea7cdd-44c0-4fef-aa05-6294bbb9b3ab"))
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ese UUID"));
-
-        pet.setUser(user);
 
         pet.setGender(register.getGender());
         pet.setWeight(register.getWeight());
@@ -114,15 +113,18 @@ public class PetService {
         pet.setHistory(register.getHistory());
         pet.setPhotoURL(register.getPhotoURL());
 
-        // todas las mascotas entran siendo disponibles
         pet.setStatus(PetStatus.DISPONIBLE);
 
-        // relaciones
+        pet.setUser(user);
+
         pet.setShelter(shelterRepository.findById(register.getShelterId())
                 .orElseThrow(() -> new RuntimeException("Shelter no encontrado")));
         pet.setSpecies(speciesRepository.findById(register.getSpeciesId())
                 .orElseThrow(() -> new RuntimeException("Especie no encontrada")));
-        // raza opcional
+        pet.setSize(sizeRepository.findById(register.getSizeId())
+                .orElseThrow(() -> new RuntimeException("Tamaño no encontrado")));
+
+        // Raza opcional
         if (register.getBreedId() != null) {
             pet.setBreed(breedRepository.findById(register.getBreedId())
                     .orElseThrow(() -> new RuntimeException("Raza no encontrada")));
@@ -130,10 +132,6 @@ public class PetService {
             pet.setBreed(null);
         }
 
-        pet.setSize(sizeRepository.findById(register.getSizeId())
-                .orElseThrow(() -> new RuntimeException("Tamaño no encontrado")));
-
-        // atributos
         if (register.getPetAttributeIds() != null && !register.getPetAttributeIds().isEmpty()) {
             List<Integer> ids = register.getPetAttributeIds();
             List<Pet_Attribute> attributes = petAttributeRepository.findAllById(ids);
@@ -144,10 +142,9 @@ public class PetService {
 
             pet.setAttributes(attributes);
         }
-
-
         petRepository.save(pet);
     }
+
 
 
     public PetResponse getPetById(UUID id) {
