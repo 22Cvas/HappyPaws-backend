@@ -95,7 +95,7 @@ public class Pet  extends Auditable {
     )
     private List<Pet_Attribute> attributes;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id", referencedColumnName = "id")
     private Image image;
 

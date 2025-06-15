@@ -5,12 +5,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+
 import org.ncapas.happypawsbackend.Domain.Entities.Breed;
 import org.ncapas.happypawsbackend.Domain.Enums.Gender;
 import org.ncapas.happypawsbackend.Domain.Enums.PetStatus;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 public class PetRegisterDto {
@@ -47,8 +49,8 @@ public class PetRegisterDto {
     @NotBlank
     private String history;
 
-    @NotBlank
-    private String photoURL;
+    private UUID imageId;
+
 
     private PetStatus status;
 

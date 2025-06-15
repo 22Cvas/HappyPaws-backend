@@ -41,6 +41,10 @@ public class PetService {
     @Autowired
     private PetAttributeRepository petAttributeRepository;
 
+    @Autowired
+    private ImageRepository imageRepository;
+
+
     private PetResponse toPetResponse(Pet pet) {
         List<PetAttributeResponseDto> attributeDtos = null;
 
@@ -112,15 +116,12 @@ public class PetService {
         pet.setReview_Date(register.getReviewDate());
         pet.setDescription(register.getDescription());
         pet.setHistory(register.getHistory());
-        if (register.getPhotoURL() != null && !register.getPhotoURL().isBlank()) {
-            Image image = new Image();
-            image.setId(UUID.randomUUID());
-            image.setName("Foto de " + register.getName());
-            image.setImgURL(register.getPhotoURL());
-            image.setImageId("img-" + UUID.randomUUID());
-
+        if (register.getImageId() != null) {
+            Image image = imageRepository.findById(register.getImageId())
+                    .orElseThrow(() -> new RuntimeException("Imagen no encontrada con ese ID"));
             pet.setImage(image);
         }
+
 
         // todas las mascotas entran siendo disponibles
         pet.setStatus(PetStatus.DISPONIBLE);
