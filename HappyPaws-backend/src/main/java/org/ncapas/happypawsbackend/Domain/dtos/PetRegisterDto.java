@@ -54,11 +54,9 @@ public class PetRegisterDto {
 
     private PetStatus status;
 
-
     @NotNull
     private Integer shelterId;
 
-    @NotNull
     private Integer breedId;
 
     @NotNull
