@@ -1,6 +1,7 @@
 package org.ncapas.happypawsbackend.services;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.ncapas.happypawsbackend.Domain.Entities.Aplication;
 import org.ncapas.happypawsbackend.Domain.Entities.Pet;
 import org.ncapas.happypawsbackend.Domain.Entities.User;
@@ -8,13 +9,18 @@ import org.ncapas.happypawsbackend.Domain.Enums.ApplicationState;
 import org.ncapas.happypawsbackend.Domain.dtos.AplicationRegisterDto;
 import org.ncapas.happypawsbackend.Domain.dtos.AplicationResponse;
 import org.ncapas.happypawsbackend.Domain.dtos.AplicationUpdateDto;
+import org.ncapas.happypawsbackend.Domain.dtos.AplicationUserDto;
 import org.ncapas.happypawsbackend.repositories.AplicationRepository;
 import org.ncapas.happypawsbackend.repositories.PetRepository;
 import org.ncapas.happypawsbackend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.stream;
 
@@ -31,8 +37,12 @@ public class AplicationService {
     private PetRepository petRepository;
 
     public void createAplication(AplicationRegisterDto request) {
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + request.getUserId()));
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+
+        User user = userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         Pet pet = petRepository.findById(request.getPetId())
                 .orElseThrow(() -> new RuntimeException("Mascota no encontrada con ID: " + request.getPetId()));
@@ -83,11 +93,8 @@ public class AplicationService {
             dto.setLocationDescription(ap.getLocationDescription());
             dto.setAplicationState(String.valueOf(ap.getApplicationState()));
 
-            if (ap.getUsers() != null) {
-                dto.setUserId(ap.getUsers().getId_user());
-            }
             if (ap.getPet() != null) {
-                dto.setPetId(ap.getPet().getId_pet());
+                dto.setPetId(ap.getPet().getId());
             }
 
             dtos.add(dto);
@@ -112,14 +119,63 @@ public class AplicationService {
         dto.setLocationDescription(a.getLocationDescription());
         dto.setAplicationState(String.valueOf(a.getApplicationState()));
 
-        if (a.getUsers() != null) {
-            dto.setUserId(a.getUsers().getId_user());
-        }
         if (a.getPet() != null) {
-            dto.setPetId(a.getPet().getId_pet());
+            dto.setPetId(a.getPet().getId());
         }
 
         return dto;
     }
 
+    public List<AplicationUserDto> getAplicationsByUser(String email) {
+        List<Aplication> solicitudes = aplicationRepository.findByUsersEmail(email);
+
+        return solicitudes.stream().map(ap -> {
+            Pet pet = ap.getPet();
+
+            return new AplicationUserDto(
+                    pet.getName(),
+                    ap.getAplication_Date()
+                            .toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate(),
+                    ap.getApplicationState(),
+                    pet.getGender().name(),
+                    pet.getSpecies().getName()
+            );
+        }).collect(Collectors.toList());
+    }
+
+    public String getLoggedUserEmail() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
+
+
+    public List<AplicationUserDto> getAcceptedAplicationsByLoggedUser() {
+        // Obtener el email del usuario autenticado desde el contexto de seguridad
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // Buscar las solicitudes con estado ACEPTED para ese usuario
+        List<Aplication> solicitudes = aplicationRepository
+                .findByUsersEmailAndApplicationState(email, ApplicationState.ACEPTADA);
+
+        // Convertir las solicitudes a DTO
+        return solicitudes.stream().map(ap -> {
+            Pet pet = ap.getPet();
+
+            return new AplicationUserDto(
+                    pet.getName(),
+                    ap.getAplication_Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
+                    ap.getApplicationState(),
+                    pet.getGender().name(),
+                    pet.getSpecies().getName()
+            );
+        }).collect(Collectors.toList());
+    }
+
+
 }
+
+
+
+
+

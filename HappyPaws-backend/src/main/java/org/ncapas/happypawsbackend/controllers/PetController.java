@@ -40,12 +40,14 @@ public class PetController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'COLABORADOR')")
     public ResponseEntity<?> deletePet(@PathVariable UUID id) {
         petService.deletePet(id);
         return ResponseEntity.ok("Mascota eliminada correctamente");
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'COLABORADOR')")
     public ResponseEntity<PetResponse> patchPet(@PathVariable UUID id, @RequestBody PetPatchDto dto) {
         PetResponse updated = petService.patchPet(id, dto);
         return ResponseEntity.ok(updated);

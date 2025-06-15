@@ -37,7 +37,7 @@ public class UserService {
         List<UserDto> request = new ArrayList<>();
         for (User u : users) {
             UserDto user = new UserDto();
-            user.setId_user(u.getId_user());
+            user.setId_user(u.getId());
             user.setName(u.getName());
             user.setEmail(u.getEmail());
             user.setDUI(u.getDUI());
@@ -52,7 +52,7 @@ public class UserService {
         return userRepository.findById(id)
                 .map(user -> {
                     UserDto dto = new UserDto();
-                    dto.setId_user(user.getId_user());
+                    dto.setId_user(user.getId());
                     dto.setName(user.getName());
                     dto.setEmail(user.getEmail());
                     dto.setDUI(user.getDUI());
@@ -79,7 +79,7 @@ public class UserService {
         userRepository.save(user);
 
         UserDto dto = new UserDto();
-        dto.setId_user(user.getId_user());
+        dto.setId_user(user.getId());
         dto.setName(user.getName());
         dto.setEmail(user.getEmail());
         dto.setDUI(user.getDUI());
@@ -93,7 +93,7 @@ public class UserService {
         return userRepository.findUserByEmail(email)
                 .map(user -> {
                     UserDto dto = new UserDto();
-                    dto.setId_user(user.getId_user());
+                    dto.setId_user(user.getId());
                     dto.setName(user.getName());
                     dto.setEmail(user.getEmail());
                     dto.setDUI(user.getDUI());

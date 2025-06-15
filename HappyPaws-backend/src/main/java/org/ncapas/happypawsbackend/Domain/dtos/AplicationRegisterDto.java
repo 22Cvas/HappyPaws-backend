@@ -32,7 +32,6 @@ public class AplicationRegisterDto {
     @NotEmpty(message = "La ubicación es obligatoria")
     private String locationDescription;
 
-    private UUID userId;
     private UUID petId;
 
 }

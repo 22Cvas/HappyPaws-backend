@@ -2,9 +2,12 @@ package org.ncapas.happypawsbackend.controllers;
 
 import jakarta.validation.Valid;
 import org.ncapas.happypawsbackend.Domain.Entities.Aplication;
+import org.ncapas.happypawsbackend.Domain.Entities.User;
+import org.ncapas.happypawsbackend.Domain.Enums.ApplicationState;
 import org.ncapas.happypawsbackend.Domain.dtos.AplicationRegisterDto;
 import org.ncapas.happypawsbackend.Domain.dtos.AplicationResponse;
 import org.ncapas.happypawsbackend.Domain.dtos.AplicationUpdateDto;
+import org.ncapas.happypawsbackend.Domain.dtos.AplicationUserDto;
 import org.ncapas.happypawsbackend.services.AplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -50,4 +53,16 @@ public class AplicationController {
         return aplicationService.getAplicationById(id);
 
     }
-}
+
+    @GetMapping("/email")
+    public ResponseEntity<?> getAplicationsUser(@RequestParam @Valid String email) {
+        return ResponseEntity.ok(aplicationService.getAplicationsByUser(email));
+    }
+
+
+    @GetMapping("/accepted")
+    public ResponseEntity<List<AplicationUserDto>> getAplicationsByState() {
+            List<AplicationUserDto> solicitudes = aplicationService.getAcceptedAplicationsByLoggedUser();
+            return ResponseEntity.ok(solicitudes);
+        }
+    }

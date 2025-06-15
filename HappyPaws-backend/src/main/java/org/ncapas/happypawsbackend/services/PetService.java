@@ -98,7 +98,7 @@ public class PetService {
 
 
         // setea un UUID "falso" para crear la mascota por el momento
-        User user = userRepository.findById(UUID.fromString("eee2bc1d-fd60-4271-a344-8fada40f926e"))
+        User user = userRepository.findById(UUID.fromString("e1ea7cdd-44c0-4fef-aa05-6294bbb9b3ab"))
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ese UUID"));
 
         pet.setUser(user);

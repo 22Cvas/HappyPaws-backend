@@ -15,7 +15,6 @@ import java.util.UUID;
 public class AplicationResponse {
 
     private UUID id;
-    private UUID userId;
     private UUID petId;
     private Boolean otherPets;
     private String locationDescription;
