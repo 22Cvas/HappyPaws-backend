@@ -2,6 +2,7 @@ package org.ncapas.happypawsbackend.utils;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.ncapas.happypawsbackend.Domain.Entities.User;
@@ -30,25 +31,42 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+
         String path = request.getRequestURI();
         if (path.startsWith("/auth/") || path.startsWith("/enums/")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String authHeader = request.getHeader("Authorization");
+        String token = null;
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-            if (jwtUtils.isTokenValid(token)) {
-                String email = jwtUtils.extractEmail(token);
-                userRepository.findUserByEmail(email).ifPresent(user -> {
-                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                            user, null, user.getAuthorities()
-                    );
-                    SecurityContextHolder.getContext().setAuthentication(auth);
-                });
+        // extrar desde la cooke el token
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("access_token".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                    break;
+                }
             }
+        }
+
+        // filtro para buscar desde el header Authorization
+        if (token == null) {
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                token = authHeader.substring(7);
+            }
+        }
+
+        // si hay, validar token y setearlo
+        if (token != null && jwtUtils.isTokenValid(token)) {
+            String email = jwtUtils.extractEmail(token);
+            userRepository.findUserByEmail(email).ifPresent(user -> {
+                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                        user, null, user.getAuthorities()
+                );
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            });
         }
 
         filterChain.doFilter(request, response);
