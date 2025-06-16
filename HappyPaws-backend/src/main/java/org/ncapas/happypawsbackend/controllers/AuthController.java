@@ -210,7 +210,7 @@ public class AuthController {
                 "email", user.getEmail(),
                 "phone", user.getPhone(),
                 "dui", user.getDUI(),
-                "rol", user.getRol().getName().getLabel()
+                "rol", user.getRol().getName().name()
         ));
     }
 
