@@ -2,11 +2,14 @@ package org.ncapas.happypawsbackend.controllers;
 
 import jakarta.validation.Valid;
 import org.ncapas.happypawsbackend.Domain.Entities.User;
+import org.ncapas.happypawsbackend.Domain.Enums.UserRol;
 import org.ncapas.happypawsbackend.Domain.dtos.UserDto;
 import org.ncapas.happypawsbackend.services.UserService;
 import org.ncapas.happypawsbackend.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
@@ -24,19 +27,32 @@ public class UserController {
     private UserServiceImpl userServiceimpl;
 
     @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserDto>> getAllUsers() {
         List<UserDto> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable UUID id) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADOPTANTE', 'COLABORADOR')")
+    public ResponseEntity<UserDto> getUserById(@PathVariable UUID id, Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String email = userDetails.getUsername();
+        User authUser = userServiceimpl.getUserByEmailEntity(email);
+
+        boolean isAdmin = authUser.getRol().getName() == UserRol.ADMIN;
+
+        if (!isAdmin && !authUser.getId().equals(id)) {
+            return ResponseEntity.status(403).build();
+        }
+
         return userService.getUserById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
         try {
             System.out.println(">>> LLAMADO A DELETE con ID: " + id);
@@ -48,17 +64,45 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable UUID id, @RequestBody UserDto updatedUser) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADOPTANTE', 'COLABORADOR')")
+    public ResponseEntity<?> updateUser(@PathVariable UUID id, @RequestBody UserDto updatedUser, Authentication authentication) {
+
+        // obtener usuario autenticado
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String email = userDetails.getUsername();
+        User authUser = userServiceimpl.getUserByEmailEntity(email);
+
+        // solo se va a poder modificar a el mismo, si no es admin
+        boolean isAdmin = authUser.getRol().getName() == UserRol.ADMIN;
+
+        if (!isAdmin && !authUser.getId().equals(id)) {
+            return ResponseEntity.status(403).body(Map.of("error", "No está autorizado para modificar otro usuario"));
+        }
         try {
             UserDto userDTO = userService.updateUser(id, updatedUser);
             return ResponseEntity.ok(userDTO);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
     @GetMapping("/email")
-    public ResponseEntity<?> getUserByEmail(@RequestParam @Valid String email) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'ADOPTANTE', 'COLABORADOR')")
+    public ResponseEntity<?> getUserByEmail(@RequestParam @Valid String email, Authentication authentication) {
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String currentEmail = userDetails.getUsername();
+        User authUser = userServiceimpl.getUserByEmailEntity(currentEmail);
+
+
+        if (!authUser.getRol().getName().equals(UserRol.ADMIN) &&
+                !authUser.getRol().getName().equals(UserRol.COLABORADOR) &&
+                !authUser.getEmail().equals(email)) {
+            return ResponseEntity.status(403).body("No esta autorizado para consultar este correo");
+        }
+
         try {
             return userService.getUserByEmail(email)
                     .map(ResponseEntity::ok)

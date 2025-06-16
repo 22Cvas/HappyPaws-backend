@@ -24,4 +24,9 @@ public class UserServiceImpl {
         );
     }
 
+    public User getUserByEmailEntity(String email) {
+        return userRepository.findUserByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con email: " + email));
+    }
+
 }

@@ -66,6 +66,11 @@ public class AuthConfig  {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/enums/**").permitAll()
+                        .requestMatchers(
+                                "/pets/all",
+                                "/pets/status/**",
+                                "/pets/{id}"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

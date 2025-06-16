@@ -53,6 +53,7 @@ public class PetController {
         return ResponseEntity.ok(updated);
     }
 
+
     @GetMapping("/status/{status}")
     public ResponseEntity<List<PetResponse>> getPetsByStatus(@PathVariable String status) {
         return ResponseEntity.ok(petService.getPetsByStatus(PetStatus.valueOf(status.toUpperCase())));
