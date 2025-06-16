@@ -65,4 +65,5 @@ public class AplicationController {
             List<AplicationUserDto> solicitudes = aplicationService.getAcceptedAplicationsByLoggedUser();
             return ResponseEntity.ok(solicitudes);
         }
-    }
+
+}

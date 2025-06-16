@@ -1,8 +1,14 @@
 package org.ncapas.happypawsbackend.services;
 
+import jakarta.transaction.Transactional;
 import lombok.NoArgsConstructor;
+import org.ncapas.happypawsbackend.Domain.Entities.RefreshToken;
+import org.ncapas.happypawsbackend.Domain.Entities.Rol;
 import org.ncapas.happypawsbackend.Domain.Entities.User;
+import org.ncapas.happypawsbackend.Domain.Enums.UserRol;
 import org.ncapas.happypawsbackend.Domain.dtos.UserDto;
+import org.ncapas.happypawsbackend.repositories.RefreshTokenRepository;
+import org.ncapas.happypawsbackend.repositories.RoleRepository;
 import org.ncapas.happypawsbackend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +24,12 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     public Optional<User> findUserByEmail(String email) {
 
@@ -62,20 +74,49 @@ public class UserService {
                 });
     }
 
+
+    @Transactional
     public void deleteUser(UUID id) {
-        if (!userRepository.existsById(id)) {
-            throw new RuntimeException("Usuario no encontrado con ID: " + id);
+        try {
+            User user = userRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
+
+            System.out.println(">>> Usuario encontrado: " + user.getEmail());
+
+            refreshTokenRepository.deleteByUser(user);
+            System.out.println(">>> Tokens eliminados");
+
+            userRepository.delete(user);
+            System.out.println(">>> Usuario eliminado");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Fallo al eliminar usuario");
         }
-        userRepository.deleteById(id);
     }
+
 
     public UserDto updateUser(UUID id, UserDto updatedUser) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
 
+        if (updatedUser.getDUI() != null && !user.getDUI().equals(updatedUser.getDUI())) {
+            throw new IllegalArgumentException("No está permitido modificar el campo 'dui'");
+        }
+
         user.setName(updatedUser.getName());
         user.setEmail(updatedUser.getEmail());
         user.setPhone(updatedUser.getPhone());
+
+        if (updatedUser.getRol() != null &&
+                !user.getRol().getName().name().equalsIgnoreCase(updatedUser.getRol())) {
+
+            UserRol nuevoRolEnum = UserRol.valueOf(updatedUser.getRol().toUpperCase());
+            Rol nuevoRol = roleRepository.findRolByName(nuevoRolEnum)
+                    .orElseThrow(() -> new RuntimeException("Rol no válido: " + updatedUser.getRol()));
+            user.setRol(nuevoRol);
+        }
+
         userRepository.save(user);
 
         UserDto dto = new UserDto();

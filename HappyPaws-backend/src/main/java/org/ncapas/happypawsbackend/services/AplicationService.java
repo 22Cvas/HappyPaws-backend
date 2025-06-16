@@ -6,6 +6,7 @@ import org.ncapas.happypawsbackend.Domain.Entities.Aplication;
 import org.ncapas.happypawsbackend.Domain.Entities.Pet;
 import org.ncapas.happypawsbackend.Domain.Entities.User;
 import org.ncapas.happypawsbackend.Domain.Enums.ApplicationState;
+import org.ncapas.happypawsbackend.Domain.Enums.PetStatus;
 import org.ncapas.happypawsbackend.Domain.dtos.AplicationRegisterDto;
 import org.ncapas.happypawsbackend.Domain.dtos.AplicationResponse;
 import org.ncapas.happypawsbackend.Domain.dtos.AplicationUpdateDto;
@@ -74,8 +75,31 @@ public class AplicationService {
         Aplication application = aplicationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
 
-        application.setApplicationState(ApplicationState.valueOf(request.getAplicationStatus()));
+        ApplicationState newState = ApplicationState.valueOf(request.getAplicationStatus());
+        application.setApplicationState(newState);
+        application.setCompletion_Date(new Date());
+
+        // cambiar el estado de la mascota a adoptado si sera aceptada la soli
+        if (newState == ApplicationState.ACEPTADA) {
+            Pet pet = application.getPet();
+            pet.setStatus(PetStatus.ADOPTADO);
+            petRepository.save(pet);
+
+            // rechaza las demas del mismo pet
+            List<Aplication> solicitudes = pet.getApplications();
+            for (Aplication otherApp : solicitudes) {
+                if (!otherApp.getId_aplication().equals(id) &&
+                        otherApp.getApplicationState() == ApplicationState.PENDIENTE) {
+
+                    otherApp.setApplicationState(ApplicationState.RECHAZADA);
+                    otherApp.setCompletion_Date(new Date());
+                    aplicationRepository.save(otherApp);
+                }
+            }
+        }
+
         aplicationRepository.save(application);
+
     }
 
     public List<AplicationResponse> getAllApplications() {

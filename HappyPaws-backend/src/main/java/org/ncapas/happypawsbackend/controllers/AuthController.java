@@ -96,6 +96,16 @@ public class AuthController {
         try {
             String jwt = authService.loginAndSaveToken(request);
 
+            ResponseCookie accessCookie = ResponseCookie.from("access_token", jwt)
+                    .httpOnly(true)
+                    .secure(false)
+                    .sameSite("Lax")
+                    .path("/")
+                    .maxAge(24 * 60 * 60)
+                    .build();
+
+            response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+
             User user = authService.getValidUser(request);
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
 
@@ -118,7 +128,7 @@ public class AuthController {
 
     @GetMapping("/refresh")
     public ResponseEntity<?> refresh(@CookieValue(name = "refresh_token", required = false)
-                                     String refreshTokenCookie) {
+                                     String refreshTokenCookie, HttpServletResponse response) {
         if (refreshTokenCookie == null || refreshTokenCookie.isBlank()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No se encontro refresh token");
         }
@@ -131,17 +141,30 @@ public class AuthController {
 
         User user = storedToken.get().getUser();
         String newAccessToken = jwtUtil.generateToken(user);
+
+        ResponseCookie accessCookie = ResponseCookie.from("access_token", newAccessToken)
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(24 * 60 * 60)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
         return ResponseEntity.ok(Map.of("token", newAccessToken));
     }
 
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = Arrays.stream(request.getCookies())
+        Cookie[] cookies = request.getCookies();
+        String refreshToken = cookies != null
+                ? Arrays.stream(cookies)
                 .filter(cookie -> "refresh_token".equals(cookie.getName()))
                 .findFirst()
                 .map(Cookie::getValue)
-                .orElse(null);
+                .orElse(null)
+                : null;
 
         if (refreshToken != null) {
             refreshTokenService.revokeToken(refreshToken);
@@ -151,7 +174,7 @@ public class AuthController {
                 .secure(false)
                 .path("/")
                 .maxAge(0)
-                .sameSite("Strict")
+                .sameSite("Lax")
                 .build();
 
         ResponseCookie deleteAccessToken = ResponseCookie.from("access_token", "")
