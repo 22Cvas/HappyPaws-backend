@@ -206,11 +206,12 @@ public class AuthController {
         User user = storedToken.get().getUser();
 
         return ResponseEntity.ok(Map.of(
+                "id", user.getId().toString(),
                 "name", user.getName(),
                 "email", user.getEmail(),
                 "phone", user.getPhone(),
                 "dui", user.getDUI(),
-                "rol", user.getRol().getName().getLabel()
+                "rol", user.getRol().getName().name()
         ));
     }
 
