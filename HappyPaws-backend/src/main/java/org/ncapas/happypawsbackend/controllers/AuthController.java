@@ -206,6 +206,7 @@ public class AuthController {
         User user = storedToken.get().getUser();
 
         return ResponseEntity.ok(Map.of(
+                "id", user.getId().toString(),
                 "name", user.getName(),
                 "email", user.getEmail(),
                 "phone", user.getPhone(),
