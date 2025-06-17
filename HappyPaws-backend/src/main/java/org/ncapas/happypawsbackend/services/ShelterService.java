@@ -91,10 +91,14 @@ public class ShelterService {
 
     @Transactional
     public void deleteShelter(Integer id) {
-        if (!shelterRepository.existsById(id)) {
-            throw new RuntimeException("Refugio no encontrado");
+        Shelter shelter = shelterRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Refugio no encontrado"));
+
+        if (shelter.getPets() != null && !shelter.getPets().isEmpty()) {
+            throw new RuntimeException("No se puede eliminar: hay mascotas asociadas a este refugio");
         }
-        shelterRepository.deleteById(id);
+
+        shelterRepository.delete(shelter);
     }
 
 }

@@ -21,7 +21,7 @@ public class Species extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_species")
-    private Integer id_species;
+    private Integer idSpecies;
 
     @Column(name = "name", nullable = false, unique = true)
     @NotBlank(message = "El nombre de la especie no puede estar vacio")

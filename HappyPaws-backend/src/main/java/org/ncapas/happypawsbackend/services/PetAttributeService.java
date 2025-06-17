@@ -38,10 +38,14 @@ public class PetAttributeService {
     }
 
     public void delete(Integer id) {
-        if (!attributeRepository.existsById(id)) {
-            throw new RuntimeException("Atributo no encontrado");
+        Pet_Attribute attribute =  attributeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Atributo no encontrado"));
+
+        if (!attribute.getPets().isEmpty()) {
+            throw new RuntimeException("No se puede eliminar: hay mascotas que usan este atributo");
         }
-        attributeRepository.deleteById(id);
+
+        attributeRepository.delete(attribute);
     }
 
     public List<PetAttributeResponseDto> getAllAttributes() {

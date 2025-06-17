@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -206,13 +207,30 @@ public class AuthController {
         User user = storedToken.get().getUser();
 
         return ResponseEntity.ok(Map.of(
+                "id", user.getId().toString(),
                 "name", user.getName(),
                 "email", user.getEmail(),
                 "phone", user.getPhone(),
                 "dui", user.getDUI(),
-                "rol", user.getRol().getName().getLabel()
+                "rol", user.getRol().getName().name()
         ));
     }
+
+    @GetMapping("/me/access")
+    public ResponseEntity<?> getMeViaAccessToken(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no autenticado");
+        }
+
+        User user = (User) authentication.getPrincipal();
+        return ResponseEntity.ok(Map.of(
+                "name", user.getName(),
+                "email", user.getEmail(),
+                "rol", user.getRol().getName().name()
+        ));
+    }
+
+
 
 }
 

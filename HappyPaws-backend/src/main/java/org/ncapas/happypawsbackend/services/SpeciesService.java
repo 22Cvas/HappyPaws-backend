@@ -1,5 +1,6 @@
 package org.ncapas.happypawsbackend.services;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.ncapas.happypawsbackend.Domain.Entities.Species;
 import org.ncapas.happypawsbackend.Domain.dtos.SpeciesDto;
@@ -17,14 +18,14 @@ public class SpeciesService {
 
     public List<SpeciesResponseDto> getAll() {
         return speciesRepository.findAll().stream()
-                .map(species -> new SpeciesResponseDto(species.getId_species(), species.getName()))
+                .map(species -> new SpeciesResponseDto(species.getIdSpecies(), species.getName()))
                 .toList();
     }
 
     public SpeciesResponseDto getById(Integer id) {
         Species species = speciesRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Especie no encontrada con ID: " + id));
-        return new SpeciesResponseDto(species.getId_species(), species.getName());
+        return new SpeciesResponseDto(species.getIdSpecies(), species.getName());
     }
 
     public SpeciesResponseDto create(SpeciesDto dto) {
@@ -41,7 +42,7 @@ public class SpeciesService {
         species.setName(dto.getName().trim());
         Species saved = speciesRepository.save(species);
 
-        return new SpeciesResponseDto(saved.getId_species(), saved.getName());
+        return new SpeciesResponseDto(saved.getIdSpecies(), saved.getName());
     }
 
     public SpeciesResponseDto update(Integer id, SpeciesDto dto) {
@@ -51,7 +52,7 @@ public class SpeciesService {
         String normalized = normalizeName(dto.getName());
 
         boolean exists = speciesRepository.findAll().stream()
-                .anyMatch(s -> !s.getId_species().equals(id)
+                .anyMatch(s -> !s.getIdSpecies().equals(id)
                         && normalizeName(s.getName()).equals(normalized));
 
         if (exists) {
@@ -61,18 +62,22 @@ public class SpeciesService {
         species.setName(dto.getName().trim());
         Species updated = speciesRepository.save(species);
 
-        return new SpeciesResponseDto(updated.getId_species(), updated.getName());
+        return new SpeciesResponseDto(updated.getIdSpecies(), updated.getName());
     }
 
+    @Transactional
     public String delete(Integer id) {
-        if (!speciesRepository.existsById(id)) {
-            throw new RuntimeException("No existe la especie con este id: " + id);
+        Species species = speciesRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Especie no encontrada"));
+
+        if ((species.getBreeds() != null && !species.getBreeds().isEmpty()) ||
+                (species.getPets() != null && !species.getPets().isEmpty())) {
+            throw new RuntimeException("No se puede eliminar: hay razas o mascotas asociadas a esta especie");
         }
 
-        speciesRepository.deleteById(id);
+        speciesRepository.delete(species);
         return "Especie eliminada correctamente";
     }
-
 
     private String normalizeName(String name) {
         if (name == null) return null;

@@ -1,13 +1,12 @@
 package org.ncapas.happypawsbackend.Domain.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.ncapas.happypawsbackend.Domain.Audit.Auditable;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -34,4 +33,9 @@ public class Shelter extends Auditable {
     @Column(name = "email")
     private String email;
 
+    @OneToMany(mappedBy = "shelter")
+    @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Pet> pets;
 }

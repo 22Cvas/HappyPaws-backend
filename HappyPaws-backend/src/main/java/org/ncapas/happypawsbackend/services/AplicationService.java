@@ -121,6 +121,10 @@ public class AplicationService {
                 dto.setPetId(ap.getPet().getId());
             }
 
+            if (ap.getUsers() != null) {
+                dto.setUserId(ap.getUsers().getId());
+            }
+
             dtos.add(dto);
         }
         return dtos;

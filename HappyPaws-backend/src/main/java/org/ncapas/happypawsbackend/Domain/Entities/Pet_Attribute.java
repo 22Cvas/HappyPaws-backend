@@ -1,5 +1,6 @@
 package org.ncapas.happypawsbackend.Domain.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,6 +28,7 @@ public class Pet_Attribute {
     @Column(name = "attribute_value")
     private String attributeValue;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "attributes")
     private List<Pet> pets;
 

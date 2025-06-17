@@ -10,6 +10,7 @@ import org.ncapas.happypawsbackend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -33,7 +34,12 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String path = request.getRequestURI();
-        if (path.startsWith("/auth/") || path.startsWith("/enums/")) {
+        if (path.equals("/auth/login")
+                || path.equals("/auth/register")
+                || path.equals("/auth/refresh")
+                || path.equals("/auth/logout")
+                || path.equals("/auth/me")
+                || path.startsWith("/enums/")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -60,14 +66,24 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         // si hay, validar token y setearlo
         if (token != null && jwtUtils.isTokenValid(token)) {
+            System.out.println("TOKEN válido: " + jwtUtils.isTokenValid(token));
+            System.out.println("USUARIO extraído: " + jwtUtils.extractEmail(token));
+
             String email = jwtUtils.extractEmail(token);
             userRepository.findUserByEmail(email).ifPresent(user -> {
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                         user, null, user.getAuthorities()
                 );
+                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(auth);
+                System.out.println("Usuario autenticado en el contexto");
+                User authenticatedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                System.out.println("Usuario autenticado: " + authenticatedUser.getEmail());
             });
+        } else {
+            System.out.println("Token inválido o no encontrado");
         }
+
 
         filterChain.doFilter(request, response);
     }

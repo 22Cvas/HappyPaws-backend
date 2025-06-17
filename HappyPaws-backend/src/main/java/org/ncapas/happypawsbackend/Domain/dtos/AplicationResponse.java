@@ -16,6 +16,7 @@ public class AplicationResponse {
 
     private UUID id;
     private UUID petId;
+    private UUID userId;
     private Boolean otherPets;
     private String locationDescription;
     private Date aplicationDate;

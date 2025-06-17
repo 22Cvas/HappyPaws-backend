@@ -65,7 +65,12 @@ public class AuthConfig  {
                 )
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/enums/**").permitAll()
+                        .requestMatchers("/auth/login",
+                                "/auth/register",
+                                "/auth/logout",
+                                "/auth/refresh",
+                                "/auth/me",
+                                "/enums/**").permitAll()
                         .requestMatchers(
                                 "/pets/all",
                                 "/pets/status/**",

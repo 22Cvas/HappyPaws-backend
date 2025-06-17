@@ -7,12 +7,14 @@ import org.ncapas.happypawsbackend.Domain.dtos.BreedDto;
 import org.ncapas.happypawsbackend.Domain.dtos.BreedResponseDto;
 import org.ncapas.happypawsbackend.services.BreedService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/breeds")
+@PreAuthorize("hasAnyRole('ADMIN', 'COLABORADOR', 'ADOPTANTE')")
 @RequiredArgsConstructor
 public class BreedController {
 
@@ -43,5 +45,13 @@ public class BreedController {
         String msg = breedService.delete(id);
         return ResponseEntity.ok(msg);
     }
+
+    @GetMapping("/byspecie/{id}")
+    public ResponseEntity<List<BreedResponseDto>> getBreedsBySpecies(@PathVariable Integer id) {
+        System.out.println("Entró a getBreedsBySpecies con id: " + id);
+        return ResponseEntity.ok(breedService.getBreedsBySpecies(id));
+    }
+
+
 }
 

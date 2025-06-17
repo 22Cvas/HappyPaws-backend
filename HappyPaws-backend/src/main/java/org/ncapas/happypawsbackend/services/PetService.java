@@ -96,7 +96,7 @@ public class PetService {
         Pet pet = new Pet();
 
 
- //       pet.setId(UUID.randomUUID()); se lo asigne como valor generado en la entidad,
+        //pet.setId(UUID.randomUUID()); se lo asigne como valor generado en la entidad,
         //ojo no se si vaya a dar error si lo tenian como update el aplicationproperties
         pet.setName(register.getName());
 
@@ -208,7 +208,7 @@ public class PetService {
             pet.setBreed(null);
         }
 
-        if (dto.getSpeciesId() != null) pet.setSpecies(Species.builder().id_species(dto.getSpeciesId()).build());
+        if (dto.getSpeciesId() != null) pet.setSpecies(Species.builder().idSpecies(dto.getSpeciesId()).build());
         if (dto.getSizeId() != null) pet.setSize(Size.builder().id_size(dto.getSizeId()).build());
         if (dto.getShelterId() != null) pet.setShelter(Shelter.builder().id_shelter(dto.getShelterId()).build());
 

@@ -89,11 +89,14 @@ public class BreedService {
 
     @Transactional
     public String delete(Integer id) {
-        if (!breedRepository.existsById(id)) {
-            throw new RuntimeException("La raza no existe");
+        Breed breed = breedRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("La raza no existe"));
+
+        if (breed.getPets() != null && !breed.getPets().isEmpty()) {
+            throw new RuntimeException("No se puede eliminar: hay mascotas asociadas a esta raza");
         }
 
-        breedRepository.deleteById(id);
+        breedRepository.delete(breed);
         return "Raza eliminada correctamente";
     }
 
@@ -101,8 +104,20 @@ public class BreedService {
         return new BreedResponseDto(
                 breed.getId_breed(),
                 breed.getName(),
-                breed.getSpecies().getId_species(),
+                breed.getSpecies().getIdSpecies(),
                 breed.getSpecies().getName()
         );
     }
+
+    public List<BreedResponseDto> getBreedsBySpecies(Integer speciesId) {
+        return breedRepository.findBySpecies_IdSpecies(speciesId).stream()
+                .map(breed -> new BreedResponseDto(
+                        breed.getId_breed(),
+                        breed.getName(),
+                        breed.getSpecies().getIdSpecies(),
+                        breed.getSpecies().getName()
+                ))
+                .toList();
+    }
+
 }
