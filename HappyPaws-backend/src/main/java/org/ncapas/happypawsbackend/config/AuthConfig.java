@@ -70,7 +70,8 @@ public class AuthConfig  {
                                 "/auth/logout",
                                 "/auth/refresh",
                                 "/auth/me",
-                                "/enums/**").permitAll()
+                                "/enums/**",
+                                "/sizes/all").permitAll()
                         .requestMatchers(
                                 "/pets/all",
                                 "/pets/status/**",

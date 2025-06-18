@@ -47,9 +47,7 @@ public class PetService {
 
 
     private PetResponse toPetResponse(Pet pet) {
-        List<PetAttributeResponseDto> attributeDtos = null;
-
-        attributeDtos = pet.getAttributes().stream()
+        List<PetAttributeResponseDto> attributeDtos = pet.getAttributes().stream()
                 .map(attr -> PetAttributeResponseDto.builder()
                         .id(attr.getId_pet_attribute())
                         .attributeName(attr.getAttributeName())
@@ -57,26 +55,44 @@ public class PetService {
                         .build())
                 .collect(Collectors.toList());
 
+        // Calcular ageValue y ageUnit desde pet.getAge() (que está en meses)
+        int edadEnMeses = pet.getAge();
+        String ageUnit = "MESES";
+        int ageValue = edadEnMeses;
+
+        if (edadEnMeses % 12 == 0) {
+            ageUnit = "AÑOS";
+            ageValue = edadEnMeses / 12;
+        }
+
         return PetResponse.builder()
                 .id(pet.getId())
                 .name(pet.getName())
                 .species(pet.getSpecies() != null ? pet.getSpecies().getName() : null)
+                .speciesId(pet.getSpecies() != null ? pet.getSpecies().getIdSpecies().longValue() : null)
                 .breed(pet.getBreed() != null ? pet.getBreed().getName() : null)
-                .size(pet.getSize() != null && pet.getSize().getName() != null
-                        ? pet.getSize().getName().getLabel()
-                        : null)
+                .breedId(pet.getBreed() != null ? pet.getBreed().getId_breed().longValue() : null)
+                .size(pet.getSize() != null && pet.getSize().getName() != null ? pet.getSize().getName().getLabel() : null)
+                .sizeId(pet.getSize() != null ? pet.getSize().getId_size().longValue() : null)
                 .gender(pet.getGender() != null ? pet.getGender().name() : null)
-                .age(pet.getAge())
+                .age(ageValue)
+                .ageUnit(ageUnit)
                 .sterilized(pet.isSterilized())
+                .parasiteFree(pet.isParasiteFree())
+                .fullyVaccinated(pet.isFullyVaccinated())
                 .status(pet.getStatus() != null ? pet.getStatus().name() : null)
                 .photoUrl(pet.getImage() != null ? pet.getImage().getImgURL() : null)
                 .description(pet.getDescription())
-                .entryDate(pet.getEntry_Date() != null
-                        ? pet.getEntry_Date().atStartOfDay().toInstant(ZoneOffset.UTC)
-                        : null)
+                .history(pet.getHistory())
+                .entryDate(pet.getEntry_Date() != null ? pet.getEntry_Date().atStartOfDay().toInstant(ZoneOffset.UTC) : null)
+                .reviewDate(pet.getReview_Date() != null ? pet.getReview_Date().atStartOfDay().toInstant(ZoneOffset.UTC) : null)
+                .shelterId(pet.getShelter() != null ? pet.getShelter().getId_shelter().longValue() : null)
                 .attributes(attributeDtos)
+                .weight(pet.getWeight())
                 .build();
     }
+
+
 
     public List<PetResponse> getAllPets(String status) {
         List<Pet> pets = (status != null)
@@ -240,7 +256,6 @@ public class PetService {
         List<Pet> pets = petRepository.findByStatus(status);
         return pets.stream().map(this::toPetResponse).collect(Collectors.toList());
     }
-
 
     public List<PetResponse> getPetsByUser(UUID userId) {
         List<Pet> pets = petRepository.findByUserId(userId);

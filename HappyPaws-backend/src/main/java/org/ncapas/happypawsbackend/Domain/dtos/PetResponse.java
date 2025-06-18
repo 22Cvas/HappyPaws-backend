@@ -29,6 +29,20 @@ public class PetResponse {
 
         private String description;
 
+        private Long speciesId;
+        private Long breedId;
+        private Long sizeId;
+
+        private String ageUnit;
+        private Boolean parasiteFree;
+        private Boolean fullyVaccinated;
+        private String history;
+        private Instant reviewDate;
+        private Long shelterId;
+
+        private Integer weight;
+
+
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         private List<PetAttributeResponseDto> attributes;
 }
