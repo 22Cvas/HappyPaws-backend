@@ -27,6 +27,8 @@ public class PetResponse {
         private String photoUrl;
         private Instant entryDate;
 
+        private String description;
+
         @JsonInclude(JsonInclude.Include.NON_EMPTY)
         private List<PetAttributeResponseDto> attributes;
 }

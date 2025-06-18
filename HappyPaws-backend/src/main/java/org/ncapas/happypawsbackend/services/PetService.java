@@ -70,6 +70,7 @@ public class PetService {
                 .sterilized(pet.isSterilized())
                 .status(pet.getStatus() != null ? pet.getStatus().name() : null)
                 .photoUrl(pet.getImage() != null ? pet.getImage().getImgURL() : null)
+                .description(pet.getDescription())
                 .entryDate(pet.getEntry_Date() != null
                         ? pet.getEntry_Date().atStartOfDay().toInstant(ZoneOffset.UTC)
                         : null)
@@ -239,6 +240,7 @@ public class PetService {
         List<Pet> pets = petRepository.findByStatus(status);
         return pets.stream().map(this::toPetResponse).collect(Collectors.toList());
     }
+
 
     public List<PetResponse> getPetsByUser(UUID userId) {
         List<Pet> pets = petRepository.findByUserId(userId);
