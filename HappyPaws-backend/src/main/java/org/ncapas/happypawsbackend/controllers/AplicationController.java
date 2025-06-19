@@ -11,6 +11,7 @@ import org.ncapas.happypawsbackend.Domain.dtos.AplicationUserDto;
 import org.ncapas.happypawsbackend.services.AplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -54,8 +55,9 @@ public class AplicationController {
 
     }
 
-    @GetMapping("/email")
-    public ResponseEntity<?> getAplicationsUser(@RequestParam @Valid String email) {
+    @GetMapping("/by-user")
+    public ResponseEntity<?> getAplicationsUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return ResponseEntity.ok(aplicationService.getAplicationsByUser(email));
     }
 
