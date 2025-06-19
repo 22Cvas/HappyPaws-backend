@@ -7,6 +7,7 @@ import org.ncapas.happypawsbackend.Domain.Entities.Rol;
 import org.ncapas.happypawsbackend.Domain.Entities.User;
 import org.ncapas.happypawsbackend.Domain.Enums.UserRol;
 import org.ncapas.happypawsbackend.Domain.dtos.UserDto;
+import org.ncapas.happypawsbackend.Domain.dtos.UserDto2;
 import org.ncapas.happypawsbackend.repositories.RefreshTokenRepository;
 import org.ncapas.happypawsbackend.repositories.RoleRepository;
 import org.ncapas.happypawsbackend.repositories.UserRepository;
@@ -96,7 +97,7 @@ public class UserService {
     }
 
 
-    public UserDto updateUser(UUID id, UserDto updatedUser) {
+    public UserDto updateUser(UUID id, UserDto2 updatedUser) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
 
@@ -104,9 +105,22 @@ public class UserService {
             throw new IllegalArgumentException("No está permitido modificar el campo 'dui'");
         }
 
-        user.setName(updatedUser.getName());
-        user.setEmail(updatedUser.getEmail());
-        user.setPhone(updatedUser.getPhone());
+        boolean huboCambios = false;
+
+        if (updatedUser.getName() != null && !updatedUser.getName().equals(user.getName())) {
+            user.setName(updatedUser.getName());
+            huboCambios = true;
+        }
+
+        if (updatedUser.getEmail() != null && !updatedUser.getEmail().equals(user.getEmail())) {
+            user.setEmail(updatedUser.getEmail());
+            huboCambios = true;
+        }
+
+        if (updatedUser.getPhone() != null && !updatedUser.getPhone().equals(user.getPhone())) {
+            user.setPhone(updatedUser.getPhone());
+            huboCambios = true;
+        }
 
         if (updatedUser.getRol() != null &&
                 !user.getRol().getName().name().equalsIgnoreCase(updatedUser.getRol())) {
@@ -115,6 +129,11 @@ public class UserService {
             Rol nuevoRol = roleRepository.findRolByName(nuevoRolEnum)
                     .orElseThrow(() -> new RuntimeException("Rol no válido: " + updatedUser.getRol()));
             user.setRol(nuevoRol);
+            huboCambios = true;
+        }
+
+        if (!huboCambios) {
+            throw new IllegalArgumentException("No se realizaron cambios en el perfil");
         }
 
         userRepository.save(user);
@@ -129,6 +148,8 @@ public class UserService {
 
         return dto;
     }
+
+
 
     public Optional<UserDto> getUserByEmail(String email) {
         return userRepository.findUserByEmail(email)

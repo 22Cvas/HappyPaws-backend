@@ -218,10 +218,6 @@ public class AuthController {
 
     @GetMapping("/me/access")
     public ResponseEntity<?> getMeViaAccessToken(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no autenticado");
-        }
-
         User user = (User) authentication.getPrincipal();
         return ResponseEntity.ok(Map.of(
                 "name", user.getName(),
@@ -229,7 +225,6 @@ public class AuthController {
                 "rol", user.getRol().getName().name()
         ));
     }
-
 
 
 }

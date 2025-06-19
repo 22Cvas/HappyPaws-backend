@@ -11,6 +11,7 @@ import org.ncapas.happypawsbackend.utils.JwtTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -65,25 +66,31 @@ public class AuthConfig  {
                 )
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login",
+                        .requestMatchers(
+                                "/auth/login",
                                 "/auth/register",
                                 "/auth/logout",
                                 "/auth/refresh",
                                 "/auth/me",
                                 "/enums/**",
-                                "/sizes/all").permitAll()
+                                "/sizes/all"
+                        ).permitAll()
                         .requestMatchers(
                                 "/pets/all",
                                 "/pets/status/**",
                                 "/pets/{id}"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/user/**").hasAnyRole("ADMIN", "COLABORADOR", "ADOPTANTE")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
+
         return http.build();
     }
+
+
 
     @Bean
     public UserDetailsService userDetailsService() {

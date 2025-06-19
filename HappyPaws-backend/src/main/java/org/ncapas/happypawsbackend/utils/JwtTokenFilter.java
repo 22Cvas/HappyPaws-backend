@@ -76,15 +76,22 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 );
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(auth);
+
+                System.out.println("🟢 Usuario autenticado en el contexto: " + user.getEmail());
+                System.out.println("🛡️ Autoridades: " + user.getAuthorities());
+                System.out.println("🆔 ID del usuario: " + user.getId());
+                System.out.println("🎭 Rol del usuario: " + user.getRol().getName().name());
+
                 System.out.println("Usuario autenticado en el contexto");
                 User authenticatedUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                System.out.println("👉 Clase del principal: " + authenticatedUser.getClass());
                 System.out.println("Usuario autenticado: " + authenticatedUser.getEmail());
             });
         } else {
             System.out.println("Token inválido o no encontrado");
         }
 
-
+        System.out.println("🚨 PASÓ JWT FILTER → va al controlador");
         filterChain.doFilter(request, response);
     }
 

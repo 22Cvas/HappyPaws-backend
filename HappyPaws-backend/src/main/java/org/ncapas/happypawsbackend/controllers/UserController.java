@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.ncapas.happypawsbackend.Domain.Entities.User;
 import org.ncapas.happypawsbackend.Domain.Enums.UserRol;
 import org.ncapas.happypawsbackend.Domain.dtos.UserDto;
+import org.ncapas.happypawsbackend.Domain.dtos.UserDto2;
 import org.ncapas.happypawsbackend.services.UserService;
 import org.ncapas.happypawsbackend.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,29 +65,31 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'ADOPTANTE', 'COLABORADOR')")
-    public ResponseEntity<?> updateUser(@PathVariable UUID id, @RequestBody UserDto updatedUser, Authentication authentication) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'COLABORADOR', 'ADOPTANTE')")
+    public ResponseEntity<?> updateUser(@PathVariable UUID id, @RequestBody UserDto2 updatedUser, Authentication authentication) {
+        System.out.println("🔥 ENTRÓ AL MÉTODO PATCH");
 
-        // obtener usuario autenticado
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String email = userDetails.getUsername();
         User authUser = userServiceimpl.getUserByEmailEntity(email);
 
-        // solo se va a poder modificar a el mismo, si no es admin
-        boolean isAdmin = authUser.getRol().getName() == UserRol.ADMIN;
+        boolean isAdmin = UserRol.ADMIN.equals(authUser.getRol().getName());
 
         if (!isAdmin && !authUser.getId().equals(id)) {
-            return ResponseEntity.status(403).body(Map.of("error", "No está autorizado para modificar otro usuario"));
+            return ResponseEntity.status(403).body(Map.of("error", "No tiene permiso para modificar otro perfil."));
         }
+
         try {
-            UserDto userDTO = userService.updateUser(id, updatedUser);
-            return ResponseEntity.ok(userDTO);
+            UserDto updated = userService.updateUser(id, updatedUser);
+            return ResponseEntity.ok(updated);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }
+
+
 
     @GetMapping("/email")
     @PreAuthorize("hasAnyRole('ADMIN', 'ADOPTANTE', 'COLABORADOR')")
@@ -113,5 +116,14 @@ public class UserController {
         }
 
     }
+
+    @GetMapping("/testauth")
+    @PreAuthorize("hasAnyRole('ADMIN', 'COLABORADOR', 'ADOPTANTE')")
+    public ResponseEntity<String> testAuth() {
+        System.out.println("✅ ENTRÓ AL CONTROLADOR /testauth");
+        return ResponseEntity.ok("Entró correctamente al controlador protegido");
+    }
+
+
 
 }
