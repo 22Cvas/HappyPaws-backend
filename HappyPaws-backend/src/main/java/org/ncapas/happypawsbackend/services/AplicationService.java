@@ -75,7 +75,7 @@ public class AplicationService {
         Aplication application = aplicationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
 
-        ApplicationState newState = ApplicationState.valueOf(request.getAplicationStatus());
+        ApplicationState newState = ApplicationState.valueOf(request.getAplicationState());
         application.setApplicationState(newState);
         application.setCompletion_Date(new Date());
 
@@ -118,10 +118,12 @@ public class AplicationService {
             dto.setAplicationState(String.valueOf(ap.getApplicationState()));
 
             if (ap.getPet() != null) {
+                dto.setPet(ap.getPet().getName());
                 dto.setPetId(ap.getPet().getId());
             }
 
             if (ap.getUsers() != null) {
+                dto.setUser(ap.getUsers().getName());
                 dto.setUserId(ap.getUsers().getId());
             }
 
@@ -149,7 +151,14 @@ public class AplicationService {
 
         if (a.getPet() != null) {
             dto.setPetId(a.getPet().getId());
+            dto.setPet(a.getPet().getName());
         }
+
+        if (a.getUsers() != null) {
+            dto.setUserId(a.getUsers().getId());
+            dto.setUser(a.getUsers().getName());
+        }
+
 
         return dto;
     }
@@ -179,14 +188,13 @@ public class AplicationService {
 
 
     public List<AplicationUserDto> getAcceptedAplicationsByLoggedUser() {
-        // Obtener el email del usuario autenticado desde el contexto de seguridad
+        // obtiene un usuario
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        // Buscar las solicitudes con estado ACEPTED para ese usuario
+        // Buscar las solicitudes con estado ACEPTADA para ese usuario
         List<Aplication> solicitudes = aplicationRepository
                 .findByUsersEmailAndApplicationState(email, ApplicationState.ACEPTADA);
 
-        // Convertir las solicitudes a DTO
         return solicitudes.stream().map(ap -> {
             Pet pet = ap.getPet();
 

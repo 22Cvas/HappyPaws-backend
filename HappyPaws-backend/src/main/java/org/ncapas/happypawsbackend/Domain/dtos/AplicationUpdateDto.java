@@ -12,8 +12,7 @@ import java.util.UUID;
 @Setter
 public class AplicationUpdateDto {
 
-    private UUID id;
     @NotNull
-    private String aplicationStatus;
+    private String aplicationState;
 
 }
