@@ -7,10 +7,12 @@ import org.ncapas.happypawsbackend.Domain.Entities.Species;
 import org.ncapas.happypawsbackend.Domain.dtos.BreedDto;
 import org.ncapas.happypawsbackend.Domain.dtos.BreedResponseDto;
 import org.ncapas.happypawsbackend.repositories.BreedRepository;
+import org.ncapas.happypawsbackend.repositories.PetRepository;
 import org.ncapas.happypawsbackend.repositories.SpeciesRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +20,7 @@ public class BreedService {
 
     private final BreedRepository breedRepository;
     private final SpeciesRepository speciesRepository;
+    private final PetRepository petRepository;
 
     private String normalizeName(String name) {
         if (name == null) return null;
@@ -118,6 +121,11 @@ public class BreedService {
                         breed.getSpecies().getName()
                 ))
                 .toList();
+    }
+
+    public Map<String, Boolean> checkBreedRelations(Integer breedId) {
+        boolean hasPets = petRepository.existsByBreedId(breedId);
+        return Map.of("hasPets", hasPets);
     }
 
 }

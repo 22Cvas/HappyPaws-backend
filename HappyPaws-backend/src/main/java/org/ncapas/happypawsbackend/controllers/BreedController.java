@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/breeds")
@@ -50,6 +51,12 @@ public class BreedController {
     public ResponseEntity<List<BreedResponseDto>> getBreedsBySpecies(@PathVariable Integer id) {
         System.out.println("Entró a getBreedsBySpecies con id: " + id);
         return ResponseEntity.ok(breedService.getBreedsBySpecies(id));
+    }
+
+    @GetMapping("/related/{id}")
+    public ResponseEntity<Map<String, Boolean>> checkBreedRelations(@PathVariable Integer id) {
+        Map<String, Boolean> result = breedService.checkBreedRelations(id);
+        return ResponseEntity.ok(result);
     }
 
 

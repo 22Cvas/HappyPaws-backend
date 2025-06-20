@@ -5,16 +5,22 @@ import lombok.RequiredArgsConstructor;
 import org.ncapas.happypawsbackend.Domain.Entities.Species;
 import org.ncapas.happypawsbackend.Domain.dtos.SpeciesDto;
 import org.ncapas.happypawsbackend.Domain.dtos.SpeciesResponseDto;
+import org.ncapas.happypawsbackend.repositories.BreedRepository;
+import org.ncapas.happypawsbackend.repositories.PetRepository;
 import org.ncapas.happypawsbackend.repositories.SpeciesRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class SpeciesService {
 
     private final SpeciesRepository speciesRepository;
+    private final PetRepository petRepository;
+    private final BreedRepository breedRepository;
+
 
     public List<SpeciesResponseDto> getAll() {
         return speciesRepository.findAll().stream()
@@ -90,4 +96,15 @@ public class SpeciesService {
 
         return trimmed;
     }
+
+    public Map<String, Boolean> checkSpeciesRelations(Integer speciesId) {
+        boolean hasPets = petRepository.existsBySpecies_IdSpecies(speciesId);
+        boolean hasBreeds = breedRepository.existsBySpecies_IdSpecies(speciesId);
+        return Map.of(
+                "hasPets", hasPets,
+                "hasBreeds", hasBreeds
+        );
+    }
+
+
 }

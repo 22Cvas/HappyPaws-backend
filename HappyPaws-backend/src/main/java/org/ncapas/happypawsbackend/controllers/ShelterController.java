@@ -46,4 +46,11 @@ public class ShelterController {
         shelterService.deleteShelter(id);
         return ResponseEntity.ok(Map.of("message", "Refugio eliminado con éxito"));
     }
+
+    @GetMapping("/related/{id}")
+    public ResponseEntity<Map<String, Boolean>> checkShelterRelations(@PathVariable Integer id) {
+        boolean hasPets = shelterService.hasAssociatedPets(id);
+        return ResponseEntity.ok(Map.of("hasPets", hasPets));
+    }
+
 }

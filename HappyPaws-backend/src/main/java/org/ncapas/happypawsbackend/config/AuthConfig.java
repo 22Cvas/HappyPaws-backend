@@ -81,6 +81,7 @@ public class AuthConfig  {
                                 "/pets/{id}"
                         ).permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/user/**").hasAnyRole("ADMIN", "COLABORADOR", "ADOPTANTE")
+                        .requestMatchers("/pet_attributes/related/**").hasAnyRole("ADMIN", "COLABORADOR")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.ncapas.happypawsbackend.Domain.Entities.Shelter;
 import org.ncapas.happypawsbackend.Domain.dtos.ShelterDto;
 import org.ncapas.happypawsbackend.Domain.dtos.ShelterResponseDto;
+import org.ncapas.happypawsbackend.repositories.PetRepository;
 import org.ncapas.happypawsbackend.repositories.ShelterRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,8 @@ import java.util.List;
 public class ShelterService {
 
     private final ShelterRepository shelterRepository;
+
+    private final PetRepository petRepository;
 
     private String normalizeName(String name) {
         return name == null ? null : name.trim().toLowerCase();
@@ -99,6 +102,10 @@ public class ShelterService {
         }
 
         shelterRepository.delete(shelter);
+    }
+
+    public boolean hasAssociatedPets(Integer shelterId) {
+        return petRepository.existsByShelterId(shelterId);
     }
 
 }

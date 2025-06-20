@@ -11,4 +11,7 @@ import java.util.Optional;
 public interface BreedRepository extends JpaRepository<Breed, Integer> {
     Optional<Breed> findByName(String name);
     List<Breed> findBySpecies_IdSpecies(Integer id);
+
+    boolean existsBySpecies_IdSpecies(Integer speciesId);
+
 }

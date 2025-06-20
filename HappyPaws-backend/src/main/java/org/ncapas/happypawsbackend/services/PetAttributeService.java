@@ -10,6 +10,7 @@ import org.ncapas.happypawsbackend.repositories.PetRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 public class PetAttributeService {
 
     private final PetAttributeRepository attributeRepository;
+    private final PetRepository petRepository;
 
     public void create(PetAttributeRequestDto dto) {
         Pet_Attribute attr = new Pet_Attribute();
@@ -62,6 +64,11 @@ public class PetAttributeService {
                                 .collect(Collectors.toList()))
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    public Map<String, Boolean> checkAttributeRelations(Integer attributeId) {
+        boolean hasPets = petRepository.existsByAttributeId(attributeId);
+        return Map.of("hasPets", hasPets);
     }
 
 }

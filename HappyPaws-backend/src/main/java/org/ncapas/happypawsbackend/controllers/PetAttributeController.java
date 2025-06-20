@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -42,5 +43,11 @@ public class PetAttributeController {
     public ResponseEntity<?> delete(@PathVariable Integer id) {
         petattributeservice.delete(id);
         return ResponseEntity.ok("Atributo eliminado con éxito");
+    }
+
+    @GetMapping("/related/{id}")
+    public ResponseEntity<Map<String, Boolean>> checkRelations(@PathVariable Integer id) {
+        Map<String, Boolean> result = petattributeservice.checkAttributeRelations(id);
+        return ResponseEntity.ok(result);
     }
 }

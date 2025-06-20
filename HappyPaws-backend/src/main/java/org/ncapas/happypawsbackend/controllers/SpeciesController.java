@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/species")
@@ -42,4 +43,11 @@ public class SpeciesController {
         String response = speciesService.delete(id);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/related/{id}")
+    public ResponseEntity<Map<String, Boolean>> checkSpeciesRelations(@PathVariable Integer id) {
+        Map<String, Boolean> result = speciesService.checkSpeciesRelations(id);
+        return ResponseEntity.ok(result);
+    }
+
 }
