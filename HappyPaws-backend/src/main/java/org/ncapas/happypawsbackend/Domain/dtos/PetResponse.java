@@ -41,6 +41,7 @@ public class PetResponse {
         private Long shelterId;
 
         private Integer weight;
+        private Integer ageValue;
 
 
         @JsonInclude(JsonInclude.Include.NON_EMPTY)

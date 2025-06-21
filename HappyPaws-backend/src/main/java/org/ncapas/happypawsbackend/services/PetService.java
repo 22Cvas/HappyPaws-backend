@@ -75,7 +75,8 @@ public class PetService {
                 .size(pet.getSize() != null && pet.getSize().getName() != null ? pet.getSize().getName().getLabel() : null)
                 .sizeId(pet.getSize() != null ? pet.getSize().getId_size().longValue() : null)
                 .gender(pet.getGender() != null ? pet.getGender().name() : null)
-                .age(ageValue)
+                .age(pet.getAge()) // en meses
+                .ageValue(ageValue) // 2
                 .ageUnit(ageUnit)
                 .sterilized(pet.isSterilized())
                 .parasiteFree(pet.isParasiteFree())
