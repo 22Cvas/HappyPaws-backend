@@ -8,6 +8,7 @@ import org.ncapas.happypawsbackend.Domain.dtos.UserDto2;
 import org.ncapas.happypawsbackend.services.UserService;
 import org.ncapas.happypawsbackend.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -54,15 +55,26 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
+    public ResponseEntity<?> deleteUser(@PathVariable UUID id) {
         try {
             System.out.println(">>> LLAMADO A DELETE con ID: " + id);
             userService.deleteUser(id);
             return ResponseEntity.noContent().build();
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            String errorMessage = e.getMessage();
+            System.out.println(">>> ERROR AL ELIMINAR: " + errorMessage);
+
+            if (errorMessage != null && errorMessage.contains("relaciones activas")) {
+                return ResponseEntity.badRequest().body(Map.of("error", errorMessage));
+            }
+
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", errorMessage != null ? errorMessage : "Error desconocido al eliminar usuario"));
         }
     }
+
+
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'COLABORADOR', 'ADOPTANTE')")

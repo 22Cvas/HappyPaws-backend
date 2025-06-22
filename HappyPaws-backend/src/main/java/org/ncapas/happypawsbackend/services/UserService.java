@@ -2,6 +2,7 @@ package org.ncapas.happypawsbackend.services;
 
 import jakarta.transaction.Transactional;
 import lombok.NoArgsConstructor;
+import org.hibernate.exception.ConstraintViolationException;
 import org.ncapas.happypawsbackend.Domain.Entities.RefreshToken;
 import org.ncapas.happypawsbackend.Domain.Entities.Rol;
 import org.ncapas.happypawsbackend.Domain.Entities.User;
@@ -12,7 +13,11 @@ import org.ncapas.happypawsbackend.repositories.RefreshTokenRepository;
 import org.ncapas.happypawsbackend.repositories.RoleRepository;
 import org.ncapas.happypawsbackend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionSystemException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,12 +80,11 @@ public class UserService {
                 });
     }
 
-
     @Transactional
     public void deleteUser(UUID id) {
         try {
             User user = userRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado con ID: " + id));
 
             System.out.println(">>> Usuario encontrado: " + user.getEmail());
 
@@ -90,11 +94,19 @@ public class UserService {
             userRepository.delete(user);
             System.out.println(">>> Usuario eliminado");
 
+        } catch (DataIntegrityViolationException e) {
+            if (e.getCause() instanceof ConstraintViolationException) {
+                System.out.println(">>> Excepción por restricción FK: relaciones activas");
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "No se puede eliminar el usuario porque tiene relaciones activas.");
+            }
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Error de integridad de datos al eliminar el usuario.");
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Fallo al eliminar usuario");
+            System.out.println(">>> Tipo de excepción: " + e.getClass().getName());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error inesperado al eliminar el usuario.");
         }
     }
+
 
 
     public UserDto updateUser(UUID id, UserDto2 updatedUser) {
