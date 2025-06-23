@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/image")
+@RequestMapping("/image")
 @RequiredArgsConstructor
 public class CloudinaryController {
 
