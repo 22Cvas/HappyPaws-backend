@@ -47,6 +47,19 @@ public class AplicationService {
 
         Pet pet = petRepository.findById(request.getPetId())
                 .orElseThrow(() -> new RuntimeException("Mascota no encontrada con ID: " + request.getPetId()));
+
+
+        boolean existsAplicationByPet = aplicationRepository.existsByUsersIdAndPetId(
+                user.getId(),
+                request.getPetId()
+        );
+
+
+
+        if (existsAplicationByPet) {
+            throw new RuntimeException("Ya existe una solicitud para esta mascota por este usuario");
+        }
+
         Aplication aplication = new Aplication();
         aplication.setOther_Pets(request.isOther_Pets());
         aplication.setLocationDescription(request.getLocationDescription());

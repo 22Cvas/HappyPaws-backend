@@ -34,4 +34,6 @@ public class AplicationRegisterDto {
 
     private UUID petId;
 
+    private String email;
+
 }
