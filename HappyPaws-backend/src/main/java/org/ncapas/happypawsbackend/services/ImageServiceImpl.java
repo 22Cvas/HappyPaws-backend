@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class ImageServiceImpl implements ImageService {
@@ -26,7 +27,10 @@ public class ImageServiceImpl implements ImageService {
         String imageUrl = (String) uploadResult.get("url");
         String imageId = (String) uploadResult.get("public_id");
 
-        Image newImage = new Image(file.getOriginalFilename(), imageUrl, imageId);
+        Image newImage = new Image();
+        newImage.setName(file.getOriginalFilename());
+        newImage.setImgURL(imageUrl);
+        newImage.setImageId(imageId);
 
         return imageRepository.save(newImage);
     }

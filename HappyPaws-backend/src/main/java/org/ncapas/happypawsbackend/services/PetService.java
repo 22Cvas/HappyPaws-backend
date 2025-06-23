@@ -211,11 +211,12 @@ public class PetService {
                 image = new Image();
                 image.setId(UUID.randomUUID());
                 image.setName("Foto de " + pet.getName());
-                image.setImageId("img-" + UUID.randomUUID());
+                image.setImageId("img-" + UUID.randomUUID()); // O algo válido aquí
                 pet.setImage(image);
             }
             image.setImgURL(dto.getPhotoURL());
         }
+
         if (dto.getStatus() != null) pet.setStatus(dto.getStatus());
 
 

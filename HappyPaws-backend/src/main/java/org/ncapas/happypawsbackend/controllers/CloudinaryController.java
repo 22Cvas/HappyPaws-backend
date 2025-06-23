@@ -24,7 +24,7 @@ public class CloudinaryController {
     public ResponseEntity<ImageDTO> uploadImage(@RequestParam("file") MultipartFile file) {
         try {
             Image image = imageService.uploadImage(file);
-            ImageDTO dto = new ImageDTO(image.getName(), image.getImgURL(), image.getImageId());
+            ImageDTO dto = new ImageDTO(image.getId(), image.getName(), image.getImgURL());
             return ResponseEntity.ok(dto);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

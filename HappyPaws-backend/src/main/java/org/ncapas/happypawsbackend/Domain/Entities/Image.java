@@ -2,10 +2,7 @@ package org.ncapas.happypawsbackend.Domain.Entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.engine.internal.Cascade;
+import lombok.*;
 import org.ncapas.happypawsbackend.Domain.Audit.Auditable;
 
 import java.util.UUID;
@@ -14,6 +11,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Setter
+@Getter
+
 @Table(name = "Image")
 public class Image extends Auditable {
 
@@ -30,11 +30,5 @@ public class Image extends Auditable {
 
     @NotBlank
     private String imageId;
-
-    public Image(String name, String imgURL, String imageId) {
-        this.name = name;
-        this.imgURL = imgURL;
-        this.imageId = imageId;
-    }
 
 }
