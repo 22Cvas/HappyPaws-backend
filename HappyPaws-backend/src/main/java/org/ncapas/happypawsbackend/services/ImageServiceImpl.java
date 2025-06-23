@@ -37,8 +37,15 @@ public class ImageServiceImpl implements ImageService {
 
 
     @Override
-    public void deleteImage(Image image) throws IOException {
-        cloudinaryService.delete(image.getImageId());
+    public void deleteImage(UUID imageId) throws IOException {
+        Image image = imageRepository.findById(imageId)
+                .orElseThrow(() -> new RuntimeException("Imagen no encontrada"));
+
+        // Eliminar en Cloudinary
+        cloudinaryService.delete(image.getName()); // nombre = public_id
+
+        // Eliminar en la base de datos
         imageRepository.delete(image);
     }
+
 }

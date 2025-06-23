@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/image")
@@ -30,6 +31,19 @@ public class CloudinaryController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteImage(@PathVariable UUID id) {
+        try {
+            imageService.deleteImage(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("No se pudo eliminar la imagen: " + e.getMessage());
+        }
+    }
+
+
 }
 
 
