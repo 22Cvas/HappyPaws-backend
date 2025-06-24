@@ -89,8 +89,16 @@ public class AplicationService {
                 .orElseThrow(() -> new EntityNotFoundException("Solicitud no encontrada"));
 
         ApplicationState newState = ApplicationState.valueOf(request.getAplicationState());
+        //esto hace que si ya la aceptamos o rechazamos no se pueda cambiar ese estadoo
+        if (application.getApplicationState() == ApplicationState.ACEPTADA ||
+                application.getApplicationState() == ApplicationState.RECHAZADA) {
+            throw new IllegalStateException("No se puede modificar una solicitud que ya ha sido " + application.getApplicationState().name());
+        }
         application.setApplicationState(newState);
         application.setCompletion_Date(new Date());
+
+
+
 
         // cambiar el estado de la mascota a adoptado si sera aceptada la soli
         if (newState == ApplicationState.ACEPTADA) {
