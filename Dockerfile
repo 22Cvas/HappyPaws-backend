@@ -14,7 +14,7 @@ FROM eclipse-temurin:21-jre
 WORKDIR /app
 
 # Copiamos el JAR compilado desde tu máquina
-COPY target/HappyPaws-backend-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/target/HappyPaws-backend-0.0.1-SNAPSHOT.jar app.jar
 
 # Puerto que expone Spring Boot (Render necesita saberlo)
 EXPOSE 8080
