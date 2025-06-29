@@ -1,10 +1,10 @@
 # Etapa 1: Construcción (opcional, si querés compilar adentro de Docker)
 # ---------------------------------------------
-# FROM maven:3.9.5-eclipse-temurin-21 AS build
-# WORKDIR /app
-# COPY pom.xml .
-# COPY src ./src
-# RUN mvn clean package -DskipTests
+ FROM maven:3.9.5-eclipse-temurin-21 AS build
+ WORKDIR /app
+COPY pom.xml .
+ COPY src ./src
+ RUN mvn clean package -DskipTests
 
 # Etapa 2: Imagen final
 # ---------------------------------------------
