@@ -31,5 +31,4 @@ public class PetPatchDto {
     private Integer sizeId;
     private List<Integer> petAttributeIds;
 
-
 }

@@ -28,6 +28,7 @@ public class CloudinaryController {
             ImageDTO dto = new ImageDTO(image.getId(), image.getName(), image.getImgURL());
             return ResponseEntity.ok(dto);
         } catch (IOException e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

@@ -99,8 +99,8 @@ public class AuthController {
 
             ResponseCookie accessCookie = ResponseCookie.from("access_token", jwt)
                     .httpOnly(true)
-                    .secure(false)
-                    .sameSite("Lax")
+                    .secure(true)
+                    .sameSite("None")
                     .path("/")
                     .maxAge(24 * 60 * 60)
                     .build();
@@ -112,8 +112,8 @@ public class AuthController {
 
             ResponseCookie cookie = ResponseCookie.from("refresh_token", refreshToken.getToken())
                     .httpOnly(true)
-                    .secure(false)
-                    .sameSite("Lax")
+                    .secure(true)
+                    .sameSite("None")
                     .path("/")
                     .maxAge(7 * 24 * 60 * 60)
                     .build();
@@ -145,8 +145,8 @@ public class AuthController {
 
         ResponseCookie accessCookie = ResponseCookie.from("access_token", newAccessToken)
                 .httpOnly(true)
-                .secure(false)
-                .sameSite("Lax")
+                .secure(true)
+                .sameSite("None")
                 .path("/")
                 .maxAge(24 * 60 * 60)
                 .build();
@@ -172,18 +172,18 @@ public class AuthController {
         }
         ResponseCookie deleteRefreshToken = ResponseCookie.from("refresh_token", "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .path("/")
                 .maxAge(0)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
 
         ResponseCookie deleteAccessToken = ResponseCookie.from("access_token", "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(true)
                 .path("/")
                 .maxAge(0)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, deleteRefreshToken.toString());
